@@ -76,11 +76,13 @@ Platform:
 
 ## Open Questions
 
-* Should movement be tile-based or tap-to-move?
-* How should moves be consumed?
-* What is the ideal room size?
-* How should the map be visualized?
-* How many rooms should each level contain?
+Resolved in follow-up discussion (see [GDD.md](../GDD.md) and [TDD.md](../TDD.md) for full detail):
+
+* ~~Should movement be tile-based or tap-to-move?~~ → Tap-to-move; no free walking inside a room.
+* ~~How should moves be consumed?~~ → Only entering a tunnel (moving to a different room) costs a move.
+* ~~What is the ideal room size?~~ → Fixed reference resolution, grid-based, camera fits each room to screen; size varies per room.
+* ~~How should the map be visualized?~~ → Always-available HUD button opens a transparent overlay of visited rooms; Map Fragment (single-use) additionally snapshots tunnel connections permanently into that view.
+* ~~How many rooms should each level contain?~~ → Decided per-level during level design/playtesting, balanced against star rating — not a fixed formula.
 
 ---
 
