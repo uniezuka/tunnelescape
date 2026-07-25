@@ -160,13 +160,18 @@ TunnelEscape/
 
 ## Current Status
 
-**Pre-Production**
+**Prototyping**
+
+Completed:
+
+* Learned Godot fundamentals and built the first playable prototype
+* Core teleportation and exit-door systems implemented, driven by data (`LevelData`/`RoomData` resources + a `LevelLoader` autoload) rather than hardcoded per-room logic
+* Tutorial flow finalized: Levels 1-4, each introducing exactly one new mechanic
 
 Current focus:
 
-* Finalize game design
-* Learn Godot
-* Build the first playable prototype
+* Building Level 1 (movement + exit tutorial) as real playable content
+* Designing Levels 2-4 (Compass, Map Fragment, Warp Scroll tutorials)
 
 ---
 

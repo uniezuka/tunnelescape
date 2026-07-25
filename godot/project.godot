@@ -18,6 +18,10 @@ config/name="Tunnel Escape"
 run/main_scene="res://scenes/main/Main.tscn"
 config/features=PackedStringArray("4.7", "Mobile")
 
+[autoload]
+
+LevelLoader="*res://scripts/autoload/level_loader.gd"
+
 [display]
 
 window/size/viewport_width=1080

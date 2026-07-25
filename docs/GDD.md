@@ -125,11 +125,11 @@ Players gradually learn the tunnel network through exploration.
 
 ## Exit Door
 
-The exit door is never locked.
+The exit door is a tappable object inside one specific room — reaching that room isn't enough, the player must tap the door.
 
-Finding the correct room is the puzzle.
+In Version 1.0 the door is never locked. Finding the correct room and tapping the door completes the level.
 
-Walking into the exit completes the level.
+(Reserved for a future update: a **Locked Exit Door** that requires a **Key** — see [Ideas.md](Ideas.md). Keeping the door as its own tappable node now is what makes that possible later without restructuring.)
 
 ---
 
@@ -141,21 +141,20 @@ Looking around the current room, opening the map overlay, and other non-travel a
 
 Running out of moves results in a level failure.
 
-**Tutorial levels (1–3) have unlimited moves.**
+**Tutorial levels (1–4) have unlimited moves.**
 
 ---
 
 # 6. Difficulty Progression
 
-## Levels 1–3
+## Levels 1–4
 
-Tutorial
+Tutorial. Each level introduces exactly one new mechanic:
 
-Objectives:
-
-* Learn movement
-* Learn tunnels
-* Learn exits
+* **Level 1** — Movement: travel room to room via tunnels and find the exit.
+* **Level 2** — Compass: reveal a tunnel's destination before entering it.
+* **Level 3** — Map Fragment: snapshot tunnel connections for rooms already visited.
+* **Level 4** — Warp Scroll: instantly return to a previously visited room.
 
 Unlimited moves.
 
@@ -163,7 +162,7 @@ No pressure.
 
 ---
 
-## Levels 4–8
+## Levels 5–9
 
 Introduce:
 
@@ -173,7 +172,7 @@ Introduce:
 
 ---
 
-## Levels 9–14
+## Levels 10–14
 
 Introduce:
 

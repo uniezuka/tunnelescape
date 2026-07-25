@@ -20,7 +20,7 @@ Technical companion to the [GDD](GDD.md). Tracks engine choice, core systems, an
 
 ### Tunnel/Teleportation System
 
-Since movement is tap-to-move (no free walking, no physical collision), a tunnel is a tappable node in the room scene (e.g. an `Area2D` or `TextureButton` with an `input_event`/`pressed` signal), not a trigger the player walks into.
+Since movement is tap-to-move (no free walking, no physical collision), a tunnel is a tappable node in the room scene, not a trigger the player walks into.
 
 Flow on tap:
 
@@ -28,7 +28,12 @@ Flow on tap:
 2. Room/level controller looks up the destination room from the level's data (see Data Structures).
 3. Move counter decrements by 1.
 4. Current room scene is swapped for the destination room scene (instant, per design — no travel animation beyond a quick transition/sound cue).
-5. If the destination room is the exit room, level-complete flow triggers instead of a normal room swap.
+
+### Exit Door System
+
+**Decision:** The exit door is its own tappable node (same shape as a tunnel: tap → signal), placed inside whichever room is the level's exit room — reaching that room via tunnel does **not** auto-complete the level. The player must tap the door itself.
+
+This is deliberate groundwork for a planned **Keys / Locked Exit Door** mechanic: a locked door can reject a tap (e.g. "needs a key") without needing to special-case *entering the room*, since the room swap and the completion trigger are two separate, independent events. Not building the lock/key system yet — just keeping the door as a distinct interactive node so that feature slots in later without restructuring.
 
 ### Move Counter System
 
@@ -50,8 +55,8 @@ The **Map Fragment** power-up is single-use: on use, it snapshots the tunnel con
 
 Since all 20 levels are handcrafted (no procedural generation), level data is authored as Godot custom `Resource` types (`.tres`) rather than JSON — editor-inspectable, typed, and diff-friendly enough for handcrafting.
 
-* **`LevelData` (Resource):** level id, move limit (or unlimited, for levels 1-3), star thresholds, ordered list of `RoomData`.
-* **`RoomData` (Resource):** room id, theme/visual identifier, exit flag, optional power-up placement, `Dictionary[tunnel_color] -> destination_room_id`.
+* **`LevelData` (Resource):** level id, move limit (or unlimited, for levels 1-4), star thresholds, ordered list of `RoomData`.
+* **`RoomData` (Resource):** room id, scene reference. No separate "exit flag" — whether a room is the exit is determined by whether an Exit Door node exists in its scene, not a resource field that could drift out of sync with the room's actual content.
 
 The room/level controller reads a level's `LevelData` on load and never needs to hardcode room-to-room connections in script — everything comes from the resource, so building a new level is authoring data, not writing code.
 

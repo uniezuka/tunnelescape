@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="LevelData" load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/level_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_01_start.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_01_exit.tscn" id="4"]
+
+[sub_resource type="Resource" id="Resource_start"]
+script = ExtResource("2")
+room_id = "start"
+scene = ExtResource("3")
+
+[sub_resource type="Resource" id="Resource_exit"]
+script = ExtResource("2")
+room_id = "exit"
+scene = ExtResource("4")
+
+[resource]
+script = ExtResource("1")
+level_id = "level_01"
+move_limit = -1
+starting_room_id = "start"
+rooms = Array[Resource]([SubResource("Resource_start"), SubResource("Resource_exit")])

@@ -4,6 +4,8 @@
 
 Reveal the destination of one selected tunnel. Single-use.
 
+First introduced: Level 2 (tutorial).
+
 ## Map Fragment
 
 The map overlay itself (HUD button, semi-transparent, tap to dismiss) is always available and shows rooms the player has physically visited.
@@ -12,8 +14,12 @@ Map Fragment is single-use. On use, it snapshots which tunnel leads to which roo
 
 Does not reveal unexplored rooms or their connections. Using it with no rooms visited yet wastes it (nothing to snapshot) — the game shows a confirmation prompt ("No tunnels discovered yet — use anyway?") before letting the player burn it in that state.
 
+First introduced: Level 3 (tutorial).
+
 ## Warp Scroll
 
 Instantly teleport to any previously visited room. Consumes no moves. Single-use.
+
+First introduced: Level 4 (tutorial).
 
 ## Balancing Notes
