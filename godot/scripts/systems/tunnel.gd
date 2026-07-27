@@ -4,6 +4,7 @@ class_name Tunnel
 signal tunnel_entered(destination_room_id: String)
 
 @export var tunnel_color: Color = Color.WHITE
+@export var tunnel_label: String = "Unknown"
 @export var destination_room_id: String = ""
 
 @onready var _visual: Polygon2D = $Polygon2D

@@ -1,30 +1,92 @@
 extends Node2D
 
 @onready var _room_container: Node2D = $RoomContainer
+@onready var _hud: HUD = $HUD
+
+@export var starting_level_path: String = "res://resources/levels/level_01.tres"
 
 var _current_room: Node2D
 var _player: Node2D
 var _tutorial_lock_target: Node2D
+var _tutorial_awaiting_power_up: String = ""
+var _tutorial_awaiting_map: bool = false
+var _tutorial_forcing_compass_reveal: bool = false
 var _level_complete: bool = false
+var _pending_next_level_path: String = ""
 
 func _ready() -> void:
+	GameState.charges_changed.connect(_on_powerup_charges_changed)
+	_hud.compass_pressed.connect(_on_compass_pressed)
+	_hud.continue_pressed.connect(_on_continue_pressed)
+	_hud.map_pressed.connect(_on_map_pressed)
+	_hud.fragment_pressed.connect(_on_fragment_pressed)
+	_hud.fragment_use_anyway_pressed.connect(_on_fragment_use_anyway_pressed)
+	_hud.fragment_cancel_pressed.connect(_on_fragment_cancel_pressed)
+	_hud.warp_pressed.connect(_on_warp_pressed)
+	_hud.warp_room_selected.connect(_on_warp_room_selected)
+	_hud.warp_cancel_pressed.connect(_on_warp_cancel_pressed)
 	LevelLoader.room_loaded.connect(_on_room_loaded)
-	var level: LevelData = load("res://resources/levels/level_01.tres")
+	_start_level(starting_level_path)
+
+func _start_level(level_path: String) -> void:
+	var level: LevelData = load(level_path)
+	_hud.set_level_label(level.level_number)
+	GameState.start_level(level)
 	LevelLoader.start_level(level, _room_container)
 
 func _on_room_loaded(room_node: Node2D, room_data: RoomData) -> void:
 	_current_room = room_node
 	_level_complete = false
+	_pending_next_level_path = ""
+	_hud.set_continue_visible(false)
 	_tutorial_lock_target = null
 	_player = room_node.get_node("Player")
+
+	var is_revisit: bool = GameState.get_visited_rooms().has(room_data.room_id)
+	GameState.mark_visited(room_data.room_id)
+
+	var room_label: Label = room_node.get_node_or_null("RoomLabel")
+	if room_label:
+		room_label.text = room_data.room_name
+
+	var caption: Label = room_node.get_node_or_null("Caption")
+	if is_revisit and room_data.revisit_caption != "" and caption:
+		caption.text = room_data.revisit_caption
 
 	for tappable in _get_room_tappables():
 		if tappable is Tunnel:
 			tappable.tunnel_entered.connect(_on_tunnel_entered.bind(tappable))
 		elif tappable is ExitDoor:
 			tappable.door_opened.connect(_on_door_opened.bind(tappable))
-		if tappable.tutorial_highlight:
+		var wants_highlight: bool = tappable.tutorial_highlight_on_revisit if is_revisit else tappable.tutorial_highlight
+		if wants_highlight:
 			_tutorial_lock_target = tappable
+
+	if _tutorial_lock_target:
+		_tutorial_lock_target.set_highlighted(true)
+
+	_tutorial_awaiting_power_up = ""
+	_tutorial_awaiting_map = false
+	_tutorial_forcing_compass_reveal = false
+	_hud.set_compass_highlighted(false)
+	_hud.set_fragment_highlighted(false)
+	_hud.set_map_highlighted(false)
+	_hud.set_warp_highlighted(false)
+
+	var required: String = room_data.requires_power_up
+	if required != "" and GameState.get_charges(required) > 0:
+		_tutorial_awaiting_power_up = required
+		if required == "compass":
+			_hud.set_compass_highlighted(true)
+		elif required == "map_fragment":
+			_hud.set_fragment_highlighted(true)
+		elif required == "warp_scroll":
+			_hud.set_warp_highlighted(true)
+
+	_hud.set_compass_visible(_tutorial_awaiting_power_up == "compass")
+	_hud.set_fragment_visible(_tutorial_awaiting_power_up == "map_fragment")
+	_hud.set_warp_visible(_tutorial_awaiting_power_up == "warp_scroll")
+	_hud.set_map_visible(GameState.map_unlocked)
 
 func _get_room_tappables() -> Array:
 	var tappables: Array = []
@@ -33,13 +95,154 @@ func _get_room_tappables() -> Array:
 			tappables.append(node)
 	return tappables
 
-func _input(event: InputEvent) -> void:
-	if _level_complete:
+func _on_powerup_charges_changed(power_up_id: String, remaining: int) -> void:
+	if remaining > 0:
 		return
+	if power_up_id == "compass":
+		_hud.set_compass_visible(false)
+		_hud.set_compass_armed(false)
+	elif power_up_id == "map_fragment":
+		_hud.set_fragment_visible(false)
+	elif power_up_id == "warp_scroll":
+		_hud.set_warp_visible(false)
 
+func _on_compass_pressed() -> void:
+	if GameState.get_charges("compass") <= 0:
+		return
+	if GameState.armed_power_up == "compass":
+		if _tutorial_forcing_compass_reveal:
+			return
+		GameState.disarm()
+		_hud.set_compass_armed(false)
+		return
+	GameState.arm("compass")
+	_hud.set_compass_armed(true)
+	if _tutorial_awaiting_power_up == "compass":
+		_tutorial_awaiting_power_up = ""
+		_tutorial_forcing_compass_reveal = true
+		_hud.set_compass_highlighted(false)
+		var caption: Label = _current_room.get_node_or_null("Caption")
+		if caption:
+			caption.text = "Now tap the glowing tunnel to reveal where it leads."
+
+func _on_fragment_pressed() -> void:
+	if GameState.get_charges("map_fragment") <= 0:
+		return
+	if not GameState.has_known_connections():
+		_hud.show_fragment_confirm()
+		return
+	_use_map_fragment()
+
+func _use_map_fragment() -> void:
+	GameState.snapshot_known_connections()
+	GameState.consume("map_fragment")
+	_hud.set_fragment_highlighted(false)
+	if _tutorial_awaiting_power_up == "map_fragment":
+		_tutorial_awaiting_power_up = ""
+		GameState.unlock_map()
+		_hud.set_map_visible(true)
+		_hud.set_map_highlighted(true)
+		_tutorial_awaiting_map = true
+		var caption: Label = _current_room.get_node_or_null("Caption")
+		if caption:
+			caption.text = "Tap Map to see what you've discovered."
+
+func _on_fragment_use_anyway_pressed() -> void:
+	_use_map_fragment()
+
+func _on_fragment_cancel_pressed() -> void:
+	pass
+
+func _on_warp_pressed() -> void:
+	if GameState.get_charges("warp_scroll") <= 0:
+		return
+	var current_room_id: String = LevelLoader.current_room_data.room_id
+	var options: Array = []
+	for room_id in GameState.get_visited_rooms():
+		if room_id == current_room_id:
+			continue
+		var room: RoomData = LevelLoader.current_level.get_room(room_id)
+		var room_name: String = room.room_name if room else room_id
+		options.append({"id": room_id, "name": room_name})
+	_hud.show_warp_picker(options)
+
+func _on_warp_room_selected(room_id: String) -> void:
+	_hud.hide_warp_picker()
+	GameState.consume("warp_scroll")
+	if _tutorial_awaiting_power_up == "warp_scroll":
+		_tutorial_awaiting_power_up = ""
+		_hud.set_warp_highlighted(false)
+	LevelLoader.enter_room(room_id)
+
+func _on_warp_cancel_pressed() -> void:
+	_hud.hide_warp_picker()
+
+func _on_map_pressed() -> void:
+	_hud.show_map_overlay(_build_map_text())
+
+func _build_map_text() -> String:
+	var current_room_id: String = LevelLoader.current_room_data.room_id
+	var lines: Array[String] = []
+	lines.append("Visited Rooms:")
+	for room_id in GameState.get_visited_rooms():
+		var room: RoomData = LevelLoader.current_level.get_room(room_id)
+		var room_name: String = room.room_name if room else room_id
+		if room_id == current_room_id:
+			lines.append("- [b]%s — You are here[/b]" % room_name)
+		else:
+			lines.append("- %s" % room_name)
+
+	if GameState.has_map_fragment_snapshot():
+		lines.append("")
+		lines.append("Known Connections:")
+		var snapshot: Dictionary = GameState.map_fragment_snapshot
+		for from_room_id in snapshot:
+			var from_room: RoomData = LevelLoader.current_level.get_room(from_room_id)
+			var from_name: String = from_room.room_name if from_room else from_room_id
+			for entry in snapshot[from_room_id]:
+				var to_room: RoomData = LevelLoader.current_level.get_room(entry["to"])
+				var to_name: String = to_room.room_name if to_room else entry["to"]
+				var color_hex: String = (entry["color"] as Color).to_html(false)
+				lines.append("- %s -> [color=#%s]%s Tunnel[/color] -> %s" % [from_name, color_hex, entry["label"], to_name])
+
+	return "\n".join(lines)
+
+func _unhandled_input(event: InputEvent) -> void:
 	var tapped: bool = (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT) \
 		or (event is InputEventScreenTouch and event.pressed)
 	if not tapped:
+		return
+
+	if _hud.is_reveal_visible():
+		_hud.hide_reveal()
+		return
+
+	if _hud.is_map_overlay_visible():
+		_hud.hide_map_overlay()
+		if _tutorial_awaiting_map:
+			_tutorial_awaiting_map = false
+			_hud.set_map_highlighted(false)
+			var caption: Label = _current_room.get_node_or_null("Caption")
+			if caption:
+				caption.text = "Tap the tunnel to continue."
+		return
+
+	if _level_complete:
+		return
+
+	if _tutorial_awaiting_power_up != "" or _tutorial_awaiting_map:
+		return
+
+	if GameState.armed_power_up == "compass":
+		var armed_point: Vector2 = get_global_mouse_position()
+		for tappable in _get_room_tappables():
+			if tappable is Tunnel and tappable.contains_point(armed_point):
+				_reveal_tunnel_destination(tappable)
+				return
+		if _tutorial_forcing_compass_reveal:
+			return
+		GameState.disarm()
+		_hud.set_compass_armed(false)
 		return
 
 	var point: Vector2 = get_global_mouse_position()
@@ -54,7 +257,18 @@ func _input(event: InputEvent) -> void:
 			tappable.trigger()
 			return
 
+func _reveal_tunnel_destination(tunnel: Tunnel) -> void:
+	var dest_room: RoomData = LevelLoader.current_level.get_room(tunnel.destination_room_id)
+	var dest_name: String = dest_room.room_name if dest_room and dest_room.room_name != "" else "an unknown room"
+	GameState.record_known_connection(LevelLoader.current_room_data.room_id, tunnel.destination_room_id, tunnel.tunnel_label, tunnel.tunnel_color)
+	_hud.show_reveal("Leads to %s." % dest_name)
+	GameState.consume("compass")
+	_hud.set_compass_armed(false)
+	_tutorial_forcing_compass_reveal = false
+
 func _on_tunnel_entered(destination_room_id: String, tunnel: Node2D) -> void:
+	var from_room_id: String = LevelLoader.current_room_data.room_id
+	GameState.record_known_connection(from_room_id, destination_room_id, tunnel.tunnel_label, tunnel.tunnel_color)
 	if _player:
 		_player.move_to(tunnel.global_position)
 	await get_tree().create_timer(0.2).timeout
@@ -67,3 +281,14 @@ func _on_door_opened(door: Node2D) -> void:
 	var caption: Label = _current_room.get_node_or_null("Caption")
 	if caption:
 		caption.text = "Level Complete!"
+
+	_pending_next_level_path = LevelLoader.current_level.next_level_path
+	_hud.set_continue_visible(_pending_next_level_path != "")
+
+func _on_continue_pressed() -> void:
+	if _pending_next_level_path == "":
+		return
+	var next_level_path: String = _pending_next_level_path
+	_pending_next_level_path = ""
+	_hud.set_continue_visible(false)
+	_start_level(next_level_path)

@@ -4,13 +4,12 @@ class_name Tappable
 @export var tap_half_width: float = 48.0
 @export var tap_half_height: float = 48.0
 @export var tutorial_highlight: bool = false
+@export var tutorial_highlight_on_revisit: bool = false
 
 var _highlight_tween: Tween
 
 func _ready() -> void:
 	add_to_group("tappables")
-	if tutorial_highlight:
-		set_highlighted(true)
 
 func contains_point(point: Vector2) -> bool:
 	var local: Vector2 = point - global_position

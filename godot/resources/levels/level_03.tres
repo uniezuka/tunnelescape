@@ -1,0 +1,36 @@
+[gd_resource type="Resource" script_class="LevelData" load_steps=8 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/level_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_03_start.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_03_middle.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_03_exit.tscn" id="5"]
+
+[sub_resource type="Resource" id="Resource_start"]
+script = ExtResource("2")
+room_id = "start"
+room_name = "Start Room"
+scene = ExtResource("3")
+
+[sub_resource type="Resource" id="Resource_middle"]
+script = ExtResource("2")
+room_id = "middle"
+room_name = "Library"
+scene = ExtResource("4")
+requires_power_up = "map_fragment"
+
+[sub_resource type="Resource" id="Resource_exit"]
+script = ExtResource("2")
+room_id = "exit"
+room_name = "Exit Room"
+scene = ExtResource("5")
+
+[resource]
+script = ExtResource("1")
+level_id = "level_03"
+level_number = 3
+next_level_path = "res://resources/levels/level_04.tres"
+move_limit = -1
+starting_room_id = "start"
+starting_power_ups = {"map_fragment": 1}
+rooms = Array[Resource]([SubResource("Resource_start"), SubResource("Resource_middle"), SubResource("Resource_exit")])

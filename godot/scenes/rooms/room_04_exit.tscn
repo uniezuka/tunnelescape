@@ -3,7 +3,7 @@
 [ext_resource type="PackedScene" path="res://scenes/main/Player.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/tunnel/ExitDoor.tscn" id="2"]
 
-[node name="Room01Exit" type="Node2D"]
+[node name="Room04Exit" type="Node2D"]
 
 [node name="Background" type="ColorRect" parent="."]
 offset_left = 0.0

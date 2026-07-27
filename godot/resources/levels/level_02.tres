@@ -2,14 +2,15 @@
 
 [ext_resource type="Script" path="res://scripts/data/level_data.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/data/room_data.gd" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/rooms/room_01_start.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://scenes/rooms/room_01_exit.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_02_start.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_02_exit.tscn" id="4"]
 
 [sub_resource type="Resource" id="Resource_start"]
 script = ExtResource("2")
 room_id = "start"
 room_name = "Start Room"
 scene = ExtResource("3")
+requires_power_up = "compass"
 
 [sub_resource type="Resource" id="Resource_exit"]
 script = ExtResource("2")
@@ -19,9 +20,10 @@ scene = ExtResource("4")
 
 [resource]
 script = ExtResource("1")
-level_id = "level_01"
-level_number = 1
-next_level_path = "res://resources/levels/level_02.tres"
+level_id = "level_02"
+level_number = 2
+next_level_path = "res://resources/levels/level_03.tres"
 move_limit = -1
 starting_room_id = "start"
+starting_power_ups = {"compass": 1}
 rooms = Array[Resource]([SubResource("Resource_start"), SubResource("Resource_exit")])
