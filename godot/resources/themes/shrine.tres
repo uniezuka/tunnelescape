@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RoomTheme" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_theme.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+theme_id = "shrine"
+display_name = "🕯️ Shrine"
+start_room_name = "The Shrine Entrance"
+exit_room_name = "The Sacred Grove"
+other_room_names = Array[String](["The Prayer Alcove", "The Candlelit Vestibule", "The Offering Table", "The Meditation Room", "The Reliquary", "The Incense Chamber", "The Monk's Quarters", "The Silent Hall", "The Ancestor Wall", "The Blessing Basin", "The Chapel of Whispers"])

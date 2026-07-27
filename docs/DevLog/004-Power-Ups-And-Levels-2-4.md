@@ -62,6 +62,49 @@ Ruled out storing "already visited/forced" directly on a `RoomData`/`LevelData` 
 
 ---
 
+---
+
+## Part 2 — Power-Up Economy, Room Themes, and Level 5
+
+Same day, later session. Picks up the "Next Goal" above: before designing Level 5 itself, resolved the GDD's last open power-up question, then discovered mid-design that room theming needed the same kind of decision.
+
+### Design Change: Power-Ups Become a Persistent Economy, Not a Per-Level Grant
+
+Closes the GDD open question "How many power-ups should players start with, and how are additional ones earned?" (see [GDD.md](../GDD.md#power-up-economy), [PowerUps.md](../PowerUps.md)).
+
+* Each of the three power-ups now has its own **stock, capped at 3**, that persists across the whole game — not reset per level like `GameState._charges` currently does.
+* Stock **refills over real time**: ~1 charge per 10 minutes per type, independent timers (no shared pool).
+* **Refund on fail:** a charge only leaves stock for good when the level is *completed*. Running out of moves, or quitting/restarting mid-attempt, refunds everything spent that attempt. Chosen specifically to protect the "relaxing, no stress" pillar — a scarce, slowly-regenerating resource that also punishes failed attempts would read like a mobile energy-grind, which the GDD explicitly rules out.
+* Rewarded ads that instantly refill a power-up's stock are noted as future scope, not built now.
+* **Not yet implemented in code.** `GameState` (`scripts/autoload/game_state.gd`) still resets `_charges` from `LevelData.starting_power_ups` in `start_level()` — that's the Day 4 tutorial-only model. Making stock persistent (save it, timestamp last refill, track attempt-scoped deltas for the refund rule) is deliberately left as a follow-up task; see [TDD.md](../TDD.md)'s new Power-Up Economy System section for the intended implementation shape.
+
+### Design Change: Room Themes Are Per-Stage, Not Per-Room
+
+Original plan (Day 3-ish) was one theme per *room*. Reworked to one theme per *stage* (level), with every room inside that stage individually named from that theme's pool — e.g. Level 5 is a single Library stage, and its rooms are "The Library Entrance," "The Potion Workshop," etc., not a room simply labeled "Library."
+
+* Finalized the 8 themes: 📚 Library, 🗿 Temple, 🌿 Garden, 🧪 Laboratory, 💎 Crystal Chamber, ⚙️ Machinery Room, 🕯️ Shrine, 📦 Storage Room.
+* Each theme has a **fixed Start Room name and Exit Room name** (e.g. Library is always "The Library Entrance" → ... → "The Grand Reading Hall"), plus a pool of 10-12 "other room" names for whatever's in between. Full lists in [ArtGuide.md](../ArtGuide.md#room-themes).
+* Applied Library to Levels 1-4 retroactively (previously generic "Start Room"/"Exit Room"/"Library"/"Dead End"): Level 3's map-fragment room is now **The Forgotten Archive**, Level 4's dead end is now **The Rare Books Wing**. Levels 1-5 all share the same Library stage, so the player learns the whole game inside one location before Level 6 moves somewhere new.
+
+### Level 5 Design: "Going in Circles"
+
+First level past the tutorial band — see [LevelDesign.md](../LevelDesign.md). 5 rooms (Library theme), 3 tunnel colors, first level with an actual move limit (12, provisional) and no forced power-up gate — the player picks their own path for the first time. One branch off the Start Room never dead-ends, but both of its exits either loop back to the start or take the long way around, teaching "not every tunnel is progress" without punishing the wrong choice hard. Star thresholds (¾/8/12) are provisional pending playtest, matching the GDD's still-open scoring-threshold question.
+
+### Refactor: `RoomTheme` Resource + Role-Based Room Naming
+
+Applying Library to Levels 1-4 by hand (retyping "The Library Entrance" into every level file) would've meant redoing that work by hand again for every future theme change — so this became a data refactor, not just a rename:
+
+* New `RoomTheme` resource (`scripts/data/room_theme.gd`): `start_room_name`, `exit_room_name`, `other_room_names`. One `.tres` per theme under `resources/themes/` — all 8 built now, even though only Library is in use, so future levels can pick one off the shelf with zero extra setup.
+* `LevelData` gained a `theme: RoomTheme` field. `RoomData` gained `room_role` (`start` / `other` / `exit`).
+* `RoomData.get_display_name(level)` resolves the shown name: `other` rooms use `room_name` directly (unchanged, still a per-level creative pick); `start`/`exit` rooms pull from `level.theme` instead. Swapping a level's theme in the future is now a single reference change — Start/Exit names cascade automatically, no per-room retyping.
+* Updated all 7 call sites in `main.gd` that used to read `room_data.room_name` directly to call `get_display_name()` instead. Updated `level_01.tres`–`level_04.tres` to reference `library.tres` and set `room_role` on their Start/Exit rooms, dropping the now-redundant hardcoded `room_name = "Start Room"` / `"Exit Room"` strings.
+
+**Bug found in code review:** the first version of `get_display_name()` claimed `room_name` was a "safety net" fallback if a level had no theme assigned — but the same change had just stripped `room_name` from every Start/Exit room in the `.tres` files, so that fallback would silently return `""` instead. Fixed by making the theme-lookup failure loud instead of silent: `push_error()` plus a visibly-wrong `"(missing room name)"` placeholder, so a future level authored without a theme fails obviously during playtesting instead of showing a blank room title.
+
+**Not tested in-engine.** No Godot install available in this environment — reviewed the `.tres`/`.gd` changes by hand for syntax and consistency, but haven't actually clicked through Levels 1-4 to confirm the renamed rooms display correctly. Worth a playthrough before trusting this fully.
+
+---
+
 ## Next Goal
 
-Levels 1-4 (the full tutorial band) are complete and chained together. Next: design Levels 5-9, which introduce a move limit, more rooms, and a third tunnel color per the GDD's difficulty progression — the first levels with actual navigation/memory challenge rather than a scripted sequence.
+Levels 1-4 (the full tutorial band) are Library-themed and chained together, and Level 5 ("Going in Circles") is designed on paper. Still to do: build Level 5's actual `.tres`/`.tscn` files in Godot; implement the persistent power-up economy in `GameState` (currently still the Day 4 per-level model); design Levels 6-9.

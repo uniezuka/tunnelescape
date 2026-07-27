@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RoomTheme" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_theme.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+theme_id = "library"
+display_name = "📚 Library"
+start_room_name = "The Library Entrance"
+exit_room_name = "The Grand Reading Hall"
+other_room_names = Array[String](["The Librarian's Office", "The Children's Reading Room", "The Forgotten Archive", "The Botanical Conservatory", "The Potion Workshop", "The Astronomer's Study", "The Crystal Repository", "The Ancient Records Vault", "The Scriptorium", "The Card Catalog Hall", "The Rare Books Wing", "The Reading Nook"])

@@ -7,6 +7,7 @@ class_name LevelData
 @export var move_limit: int = -1
 @export var starting_room_id: String = ""
 @export var starting_power_ups: Dictionary = {}
+@export var theme: RoomTheme
 @export var rooms: Array[RoomData] = []
 
 func get_room(room_id: String) -> RoomData:

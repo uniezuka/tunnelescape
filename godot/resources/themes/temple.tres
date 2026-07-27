@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RoomTheme" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_theme.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+theme_id = "temple"
+display_name = "🗿 Temple"
+start_room_name = "The Temple Entrance"
+exit_room_name = "The Inner Sanctum"
+other_room_names = Array[String](["The Antechamber of Offerings", "The Hall of Idols", "The High Priest's Chamber", "The Sunken Sanctuary", "The Chamber of Echoes", "The Ritual Basin", "The Hall of Ancestors", "The Ossuary", "The Bell Tower", "The Cloister Garden", "The Chamber of Trials"])

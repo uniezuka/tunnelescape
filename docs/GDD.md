@@ -197,6 +197,18 @@ Introduce:
 
 Only three power-ups will exist in Version 1.0.
 
+## Power-Up Economy
+
+Power-ups are not a one-time grant per level. Each of the three power-ups is a **stock the player owns across the whole game**:
+
+* **Max stock: 3 per power-up type.** Compass, Map Fragment, and Warp Scroll each have their own stock and their own refill timer — they do not share a pool.
+* **Each use spends 1 charge** from that power-up's stock.
+* **Charges refill over real time**, about 1 charge every 10 minutes per power-up type (full restock from empty takes about 30 minutes). This keeps stock feeling generous for a game built around short, repeated 1-3 minute sessions.
+* **Refund on fail:** a charge only leaves the player's stock for good when the level is *completed*. If the player runs out of moves or quits/restarts mid-attempt, any charges spent during that attempt are refunded back to stock. This keeps the game low-stress — a bad attempt never leaves the player worse off for the retry.
+* **Rewarded ads (future):** an ad can instantly refill a power-up's stock to full. Not in Version 1.0 — see [Advertisement Strategy](#14-advertisement-strategy).
+* New players start with full stock (3 of each). Tutorial levels (2-4) each force the use of one power-up, which is a real completion and therefore permanently spends 1 charge of that type — by Level 5 a player who has not paused will typically have 2 of each in stock.
+* Level design must never *require* a power-up to solve a level — they exist to reduce friction and reward exploration, not to gate completion. The one exception is the scripted first-time tutorial usage in Levels 2-4.
+
 ---
 
 ## Compass
@@ -211,7 +223,7 @@ Compass displays:
 
 "Leads to Library."
 
-Single-use.
+Spends 1 charge (max stock 3, see [Power-Up Economy](#power-up-economy)).
 
 ---
 
@@ -219,7 +231,7 @@ Single-use.
 
 A map overlay (opened via a HUD button) is always available and shows the rooms the player has physically visited.
 
-Map Fragment is single-use. On use, it snapshots which tunnel leads to which room for rooms already visited at that moment, and that connection data becomes a permanent part of the player's map knowledge for the rest of the attempt.
+Map Fragment spends 1 charge on use (max stock 3, see [Power-Up Economy](#power-up-economy)). On use, it snapshots which tunnel leads to which room for rooms already visited at that moment, and that connection data becomes a permanent part of the player's map knowledge for the rest of the attempt.
 
 Using it before exploring anything wastes it — a confirmation prompt warns the player first.
 
@@ -237,7 +249,7 @@ Instantly teleport to any previously visited room.
 
 Consumes no moves.
 
-Single-use.
+Spends 1 charge (max stock 3, see [Power-Up Economy](#power-up-economy)).
 
 Useful for recovering from inefficient exploration.
 
@@ -290,16 +302,18 @@ Clean
 
 Each room should be visually unique so players can easily recognize where they are.
 
-Example room themes:
+Each level (stage) is built around one theme, picked from the final set below. Rooms are not labeled with the theme name itself — every room inside that stage gets its own specific name that fits the theme (e.g. Stage 5, a Library stage, has rooms named "The Librarian's Office" and "The Forgotten Archive," not a room called "Library"). See [ArtGuide.md](ArtGuide.md#room-themes) for the full room-name list per theme.
 
-* Stone Dungeon
-* Library
-* Garden
-* Laboratory
-* Temple
-* Ice Cave
-* Observatory
-* Castle
+Stage themes (final set, reused across levels):
+
+* 📚 Library
+* 🗿 Temple
+* 🌿 Garden
+* 🧪 Laboratory
+* 💎 Crystal Chamber
+* ⚙️ Machinery Room
+* 🕯️ Shrine
+* 📦 Storage Room
 
 ---
 
@@ -349,7 +363,7 @@ Automatically save:
 * Highest unlocked level
 * Star ratings
 * Best move count
-* Available power-ups
+* Available power-ups (current stock and last-refill time for each, so charges keep refilling while the app is closed)
 
 ---
 
@@ -430,12 +444,12 @@ Resolved (see [TDD.md](TDD.md) for technical detail):
 * ~~How should moves be consumed?~~ → Only entering a tunnel costs a move.
 * ~~Should the player freely walk inside each room, or simply tap tunnels and the exit?~~ → Tap-to-move only; no free walking.
 * ~~How many rooms create the ideal difficulty?~~ → Decided per-level during level design/playtesting.
+* ~~How many power-ups should players start with, and how are additional ones earned?~~ → See [Power-Up Economy](#power-up-economy): max stock 3 per type, starts full, refills ~1 charge/10 min per type, refunded on a failed/abandoned attempt, instant refill via rewarded ads in a future update.
 
 Still open, to be finalized during prototyping:
 
 * Should rooms have fixed layouts or slight variations?
 * What are the exact thresholds for ⭐⭐⭐, ⭐⭐, and ⭐ scoring?
-* How many power-ups should players start with, and how are additional ones earned?
 
 ---
 

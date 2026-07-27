@@ -47,7 +47,7 @@ func _on_room_loaded(room_node: Node2D, room_data: RoomData) -> void:
 
 	var room_label: Label = room_node.get_node_or_null("RoomLabel")
 	if room_label:
-		room_label.text = room_data.room_name
+		room_label.text = room_data.get_display_name(LevelLoader.current_level)
 
 	var caption: Label = room_node.get_node_or_null("Caption")
 	if is_revisit and room_data.revisit_caption != "" and caption:
@@ -162,7 +162,7 @@ func _on_warp_pressed() -> void:
 		if room_id == current_room_id:
 			continue
 		var room: RoomData = LevelLoader.current_level.get_room(room_id)
-		var room_name: String = room.room_name if room else room_id
+		var room_name: String = room.get_display_name(LevelLoader.current_level) if room else room_id
 		options.append({"id": room_id, "name": room_name})
 	_hud.show_warp_picker(options)
 
@@ -186,7 +186,7 @@ func _build_map_text() -> String:
 	lines.append("Visited Rooms:")
 	for room_id in GameState.get_visited_rooms():
 		var room: RoomData = LevelLoader.current_level.get_room(room_id)
-		var room_name: String = room.room_name if room else room_id
+		var room_name: String = room.get_display_name(LevelLoader.current_level) if room else room_id
 		if room_id == current_room_id:
 			lines.append("- [b]%s — You are here[/b]" % room_name)
 		else:
@@ -198,10 +198,10 @@ func _build_map_text() -> String:
 		var snapshot: Dictionary = GameState.map_fragment_snapshot
 		for from_room_id in snapshot:
 			var from_room: RoomData = LevelLoader.current_level.get_room(from_room_id)
-			var from_name: String = from_room.room_name if from_room else from_room_id
+			var from_name: String = from_room.get_display_name(LevelLoader.current_level) if from_room else from_room_id
 			for entry in snapshot[from_room_id]:
 				var to_room: RoomData = LevelLoader.current_level.get_room(entry["to"])
-				var to_name: String = to_room.room_name if to_room else entry["to"]
+				var to_name: String = to_room.get_display_name(LevelLoader.current_level) if to_room else entry["to"]
 				var color_hex: String = (entry["color"] as Color).to_html(false)
 				lines.append("- %s -> [color=#%s]%s Tunnel[/color] -> %s" % [from_name, color_hex, entry["label"], to_name])
 
@@ -259,7 +259,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _reveal_tunnel_destination(tunnel: Tunnel) -> void:
 	var dest_room: RoomData = LevelLoader.current_level.get_room(tunnel.destination_room_id)
-	var dest_name: String = dest_room.room_name if dest_room and dest_room.room_name != "" else "an unknown room"
+	var dest_display_name: String = dest_room.get_display_name(LevelLoader.current_level) if dest_room else ""
+	var dest_name: String = dest_display_name if dest_display_name != "" else "an unknown room"
 	GameState.record_known_connection(LevelLoader.current_room_data.room_id, tunnel.destination_room_id, tunnel.tunnel_label, tunnel.tunnel_color)
 	_hud.show_reveal("Leads to %s." % dest_name)
 	GameState.consume("compass")

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RoomTheme" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_theme.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+theme_id = "laboratory"
+display_name = "🧪 Laboratory"
+start_room_name = "The Laboratory Entrance"
+exit_room_name = "The Chief Scientist's Office"
+other_room_names = Array[String](["The Alchemy Bench", "The Specimen Room", "The Distillation Chamber", "The Research Archive", "The Observation Deck", "The Reagent Storeroom", "The Experiment Vault", "The Botanical Sample Room", "The Cold Storage Chamber", "The Testing Bay", "The Sterilization Room"])

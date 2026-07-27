@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RoomTheme" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_theme.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+theme_id = "machinery_room"
+display_name = "⚙️ Machinery Room"
+start_room_name = "The Factory Entrance"
+exit_room_name = "The Turbine Hall"
+other_room_names = Array[String](["The Gear Works", "The Boiler Room", "The Control Room", "The Conveyor Bay", "The Furnace Chamber", "The Pressure Valve Room", "The Assembly Line", "The Engineer's Workshop", "The Steam Vent Chamber", "The Spare Parts Depot", "The Clockwork Vault"])

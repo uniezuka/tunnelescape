@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RoomTheme" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_theme.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+theme_id = "storage_room"
+display_name = "📦 Storage Room"
+start_room_name = "The Warehouse Entrance"
+exit_room_name = "The Vault of Odds and Ends"
+other_room_names = Array[String](["The Supply Depot", "The Crate Yard", "The Dusty Cellar", "The Loading Dock", "The Pantry", "The Archive Boxes Room", "The Forgotten Closet", "The Inventory Office", "The Cold Store", "The Warehouse Floor", "The Lost and Found"])

@@ -45,7 +45,16 @@ This is deliberate groundwork for a planned **Keys / Locked Exit Door** mechanic
 
 A HUD button (always available, not gated behind a power-up) opens a semi-transparent full-screen overlay showing rooms the player has physically visited, tap to dismiss. Free to open — does not consume a move.
 
-The **Map Fragment** power-up is single-use: on use, it snapshots the tunnel connections for rooms already visited at that moment and permanently merges that data into the player's map knowledge for the rest of the attempt (does not retroactively update with rooms explored afterward). Using it with zero rooms visited wastes it — show a confirmation prompt ("No tunnels discovered yet — use anyway?") before allowing the use. See [PowerUps.md](PowerUps.md).
+The **Map Fragment** power-up spends 1 charge on use: it snapshots the tunnel connections for rooms already visited at that moment and permanently merges that data into the player's map knowledge for the rest of the attempt (does not retroactively update with rooms explored afterward). Using it with zero rooms visited wastes it — show a confirmation prompt ("No tunnels discovered yet — use anyway?") before allowing the use. See [PowerUps.md](PowerUps.md).
+
+### Power-Up Economy System
+
+**Decision:** Power-up stock is global and persists across levels — it is not reset by `start_level()`. Each of the three power-up types has its own stock (0-3) and its own last-refill timestamp, both saved to disk.
+
+* **Refill:** on load, and whenever charges are read/spent, compute elapsed real time since the last-refill timestamp and add `elapsed / 10min` whole charges (capped at 3), advancing the timestamp by the amount consumed. This makes refilling correct even while the app is closed, without needing a running timer.
+* **Attempt-scoped spend:** the current level attempt tracks its own deltas (which power-ups were spent this attempt, and how many). On level completion, deltas are discarded (the spend is permanent). On failure (out of moves) or on quitting/restarting the level, deltas are added back to the persistent stock.
+* This replaces the current `GameState._charges` model (reset from `LevelData.starting_power_ups` in `start_level()`), which was built for the single-use-per-level tutorial design. `LevelData.starting_power_ups` remains useful only for the tutorial levels' forced first-time grant if a new player has 0 stock of that type; everywhere else, stock comes from the persistent economy.
+* Rewarded-ad instant refill (future) is just "set stock to 3 and reset the refill timestamp to now" — no separate code path needed.
 
 ### Room Sizing
 

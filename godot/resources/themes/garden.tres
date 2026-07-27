@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RoomTheme" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_theme.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+theme_id = "garden"
+display_name = "🌿 Garden"
+start_room_name = "The Garden Entrance"
+exit_room_name = "The Hidden Grove"
+other_room_names = Array[String](["The Greenhouse", "The Topiary Maze", "The Rose Pavilion", "The Koi Pond", "The Gardener's Shed", "The Orchard", "The Sunken Grotto", "The Herb Nursery", "The Vine-Covered Trellis", "The Fountain Courtyard", "The Beehive Apiary", "The Wildflower Meadow"])

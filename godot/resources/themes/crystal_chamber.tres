@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RoomTheme" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/room_theme.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+theme_id = "crystal_chamber"
+display_name = "💎 Crystal Chamber"
+start_room_name = "The Mine Entrance"
+exit_room_name = "The Geode Hollow"
+other_room_names = Array[String](["The Prism Hall", "The Mining Shaft", "The Resonance Chamber", "The Gem Vault", "The Luminous Cavern", "The Crystal Garden", "The Quarry Pit", "The Refraction Room", "The Miner's Rest", "The Shard Collection Hall", "The Glowstone Grotto"])
