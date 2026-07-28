@@ -16,28 +16,28 @@ Technical companion to the [GDD](GDD.md). Tracks engine choice, core systems, an
 
 ### Movement System
 
-**Decision:** Tap-to-move. Player taps a tunnel or the exit to act; no free walking inside a room, no tile-grid movement. Simpler on touch, and maps cleanly onto the move-counter model (1 move = 1 discrete action).
+**Decision:** Tap-to-move. Player taps a portal or the exit to act; no free walking inside a room, no tile-grid movement. Simpler on touch, and maps cleanly onto the move-counter model (1 move = 1 discrete action).
 
-### Tunnel/Teleportation System
+### Portal/Teleportation System
 
-Since movement is tap-to-move (no free walking, no physical collision), a tunnel is a tappable node in the room scene, not a trigger the player walks into.
+Since movement is tap-to-move (no free walking, no physical collision), a portal is a tappable node in the room scene, not a trigger the player walks into.
 
 Flow on tap:
 
-1. Tunnel node emits a signal (e.g. `tunnel_entered(destination_room_id)`).
+1. Portal node emits a signal (e.g. `portal_entered(destination_room_id)`).
 2. Room/level controller looks up the destination room from the level's data (see Data Structures).
 3. Move counter decrements by 1.
 4. Current room scene is swapped for the destination room scene (instant, per design — no travel animation beyond a quick transition/sound cue).
 
 ### Exit Door System
 
-**Decision:** The exit door is its own tappable node (same shape as a tunnel: tap → signal), placed inside whichever room is the level's exit room — reaching that room via tunnel does **not** auto-complete the level. The player must tap the door itself.
+**Decision:** The exit door is its own tappable node (same shape as a portal: tap → signal), placed inside whichever room is the level's exit room — reaching that room via portal does **not** auto-complete the level. The player must tap the door itself.
 
 This is deliberate groundwork for a planned **Keys / Locked Exit Door** mechanic: a locked door can reject a tap (e.g. "needs a key") without needing to special-case *entering the room*, since the room swap and the completion trigger are two separate, independent events. Not building the lock/key system yet — just keeping the door as a distinct interactive node so that feature slots in later without restructuring.
 
 ### Move Counter System
 
-**Decision:** Only entering a tunnel (moving to a different room) consumes a move. Opening the map overlay, inspecting the current room, etc. are free.
+**Decision:** Only entering a portal (moving to a different room) consumes a move. Opening the map overlay, inspecting the current room, etc. are free.
 
 ### Save System
 
@@ -45,7 +45,7 @@ This is deliberate groundwork for a planned **Keys / Locked Exit Door** mechanic
 
 A HUD button (always available, not gated behind a power-up) opens a semi-transparent full-screen overlay showing rooms the player has physically visited, tap to dismiss. Free to open — does not consume a move.
 
-The **Map Fragment** power-up spends 1 charge on use: it snapshots the tunnel connections for rooms already visited at that moment and permanently merges that data into the player's map knowledge for the rest of the attempt (does not retroactively update with rooms explored afterward). Using it with zero rooms visited wastes it — show a confirmation prompt ("No tunnels discovered yet — use anyway?") before allowing the use. See [PowerUps.md](PowerUps.md).
+The **Map Fragment** power-up spends 1 charge on use: it snapshots the portal connections for rooms already visited at that moment and permanently merges that data into the player's map knowledge for the rest of the attempt (does not retroactively update with rooms explored afterward). Using it with zero rooms visited wastes it — show a confirmation prompt ("No portals discovered yet — use anyway?") before allowing the use. See [PowerUps.md](PowerUps.md).
 
 ### Power-Up Economy System
 
@@ -74,7 +74,7 @@ The room/level controller reads a level's `LevelData` on load and never needs to
 First playable prototype, per [DevLog 001](DevLog/001-Project-Kickoff.md):
 
 * One room
-* Two colored tunnels
+* Two colored portals
 * One exit
 * Basic player movement
 * No UI or power-ups yet
@@ -84,7 +84,7 @@ First playable prototype, per [DevLog 001](DevLog/001-Project-Kickoff.md):
 Resolved during kickoff follow-up (see decisions above):
 
 * ~~Should movement be tile-based or tap-to-move?~~ → Tap-to-move.
-* ~~How should moves be consumed?~~ → Only entering a tunnel costs a move.
+* ~~How should moves be consumed?~~ → Only entering a portal costs a move.
 * ~~What is the ideal room size?~~ → Fixed reference resolution, camera-fit-to-room, grid-based, varies per room.
 * ~~How should the map be visualized?~~ → Always-available HUD button, transparent overlay.
 * How many rooms should each level contain? → Decided per-level during level design/playtesting, balanced against star rating (not a fixed formula).

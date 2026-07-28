@@ -54,8 +54,8 @@ func _on_room_loaded(room_node: Node2D, room_data: RoomData) -> void:
 		caption.text = room_data.revisit_caption
 
 	for tappable in _get_room_tappables():
-		if tappable is Tunnel:
-			tappable.tunnel_entered.connect(_on_tunnel_entered.bind(tappable))
+		if tappable is Portal:
+			tappable.portal_entered.connect(_on_portal_entered.bind(tappable))
 		elif tappable is ExitDoor:
 			tappable.door_opened.connect(_on_door_opened.bind(tappable))
 		var wants_highlight: bool = tappable.tutorial_highlight_on_revisit if is_revisit else tappable.tutorial_highlight
@@ -123,7 +123,7 @@ func _on_compass_pressed() -> void:
 		_hud.set_compass_highlighted(false)
 		var caption: Label = _current_room.get_node_or_null("Caption")
 		if caption:
-			caption.text = "Now tap the glowing tunnel to reveal where it leads."
+			caption.text = "Now tap the glowing portal to reveal where it leads."
 
 func _on_fragment_pressed() -> void:
 	if GameState.get_charges("map_fragment") <= 0:
@@ -203,7 +203,7 @@ func _build_map_text() -> String:
 				var to_room: RoomData = LevelLoader.current_level.get_room(entry["to"])
 				var to_name: String = to_room.get_display_name(LevelLoader.current_level) if to_room else entry["to"]
 				var color_hex: String = (entry["color"] as Color).to_html(false)
-				lines.append("- %s -> [color=#%s]%s Tunnel[/color] -> %s" % [from_name, color_hex, entry["label"], to_name])
+				lines.append("- %s -> [color=#%s]%s Portal[/color] -> %s" % [from_name, color_hex, entry["label"], to_name])
 
 	return "\n".join(lines)
 
@@ -224,7 +224,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_hud.set_map_highlighted(false)
 			var caption: Label = _current_room.get_node_or_null("Caption")
 			if caption:
-				caption.text = "Tap the tunnel to continue."
+				caption.text = "Tap the portal to continue."
 		return
 
 	if _level_complete:
@@ -236,8 +236,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if GameState.armed_power_up == "compass":
 		var armed_point: Vector2 = get_global_mouse_position()
 		for tappable in _get_room_tappables():
-			if tappable is Tunnel and tappable.contains_point(armed_point):
-				_reveal_tunnel_destination(tappable)
+			if tappable is Portal and tappable.contains_point(armed_point):
+				_reveal_portal_destination(tappable)
 				return
 		if _tutorial_forcing_compass_reveal:
 			return
@@ -257,21 +257,21 @@ func _unhandled_input(event: InputEvent) -> void:
 			tappable.trigger()
 			return
 
-func _reveal_tunnel_destination(tunnel: Tunnel) -> void:
-	var dest_room: RoomData = LevelLoader.current_level.get_room(tunnel.destination_room_id)
+func _reveal_portal_destination(portal: Portal) -> void:
+	var dest_room: RoomData = LevelLoader.current_level.get_room(portal.destination_room_id)
 	var dest_display_name: String = dest_room.get_display_name(LevelLoader.current_level) if dest_room else ""
 	var dest_name: String = dest_display_name if dest_display_name != "" else "an unknown room"
-	GameState.record_known_connection(LevelLoader.current_room_data.room_id, tunnel.destination_room_id, tunnel.tunnel_label, tunnel.tunnel_color)
+	GameState.record_known_connection(LevelLoader.current_room_data.room_id, portal.destination_room_id, portal.portal_label, portal.portal_color)
 	_hud.show_reveal("Leads to %s." % dest_name)
 	GameState.consume("compass")
 	_hud.set_compass_armed(false)
 	_tutorial_forcing_compass_reveal = false
 
-func _on_tunnel_entered(destination_room_id: String, tunnel: Node2D) -> void:
+func _on_portal_entered(destination_room_id: String, portal: Node2D) -> void:
 	var from_room_id: String = LevelLoader.current_room_data.room_id
-	GameState.record_known_connection(from_room_id, destination_room_id, tunnel.tunnel_label, tunnel.tunnel_color)
+	GameState.record_known_connection(from_room_id, destination_room_id, portal.portal_label, portal.portal_color)
 	if _player:
-		_player.move_to(tunnel.global_position)
+		_player.move_to(portal.global_position)
 	await get_tree().create_timer(0.2).timeout
 	LevelLoader.enter_room(destination_room_id)
 

@@ -45,13 +45,13 @@ func mark_visited(room_id: String) -> void:
 func get_visited_rooms() -> Array:
 	return _visited_rooms.keys()
 
-func record_known_connection(from_room_id: String, destination_room_id: String, tunnel_label: String, tunnel_color: Color) -> void:
+func record_known_connection(from_room_id: String, destination_room_id: String, portal_label: String, portal_color: Color) -> void:
 	if not _known_connections.has(from_room_id):
 		_known_connections[from_room_id] = []
 	for entry in _known_connections[from_room_id]:
 		if entry["to"] == destination_room_id:
 			return
-	_known_connections[from_room_id].append({"to": destination_room_id, "label": tunnel_label, "color": tunnel_color})
+	_known_connections[from_room_id].append({"to": destination_room_id, "label": portal_label, "color": portal_color})
 
 func has_known_connections() -> bool:
 	return not _known_connections.is_empty()

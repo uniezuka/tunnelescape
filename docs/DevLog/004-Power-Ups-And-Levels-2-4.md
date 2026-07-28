@@ -16,7 +16,7 @@ Build the tutorial band all the way out: Compass (Level 2), Map Fragment + the M
 
 ### Foundational systems (built once, reused by all three power-ups)
 
-* **`GameState` autoload** (`scripts/autoload/game_state.gd`) — the `GameState` singleton named in Architecture.md's original plan, built now scoped to power-up state only (moves/current-room can join it later when Level 5+ needs them). Tracks per-attempt charges, the currently-armed power-up, visited rooms, known tunnel connections (only ever recorded when a tunnel is actually travelled or Compass-revealed — never just from standing in a room, to keep "the challenge is learning the map" intact), and the Map Fragment snapshot. Everything resets in `start_level()`.
+* **`GameState` autoload** (`scripts/autoload/game_state.gd`) — the `GameState` singleton named in Architecture.md's original plan, built now scoped to power-up state only (moves/current-room can join it later when Level 5+ needs them). Tracks per-attempt charges, the currently-armed power-up, visited rooms, known portal connections (only ever recorded when a portal is actually travelled or Compass-revealed — never just from standing in a room, to keep "the challenge is learning the map" intact), and the Map Fragment snapshot. Everything resets in `start_level()`.
 * **First HUD** (`scenes/ui/HUD.tscn` / `scripts/ui/hud.gd`) — a bottom bar of charge-gated buttons (Compass, Map Fragment, Warp Scroll) plus an always-available Map button, a Level/Room label pair, a Continue button, and three overlay patterns: tap-anywhere-to-dismiss (Reveal popup, Map overlay — `mouse_filter = Ignore` so the tap reaches `main.gd`'s world input), and fully modal (Fragment's confirm dialog, the Warp room-picker — default `mouse_filter = Stop`, since they hold buttons that must never be tap-through-able).
 * **Room naming** — `RoomData.room_name`, shown in every room via a `RoomLabel`, plus a "Level N" label. Backfilled onto Levels 1-2's rooms too.
 * **Level progression** — `LevelData.next_level_path` + a Continue button that appears on level completion; auto-chains Level 1→2→3→4.
@@ -24,30 +24,30 @@ Build the tutorial band all the way out: Compass (Level 2), Map Fragment + the M
 
 ### Level 2 — Compass
 
-Straightforward one-stage lock: tap Compass (forced first), then tap the tunnel (forced second, can't cancel mid-reveal) to learn its destination before travelling it.
+Straightforward one-stage lock: tap Compass (forced first), then tap the portal (forced second, can't cancel mid-reveal) to learn its destination before travelling it.
 
 ### Level 3 — Map Fragment + Map overlay
 
-* Map Fragment snapshots *currently known* tunnel connections and freezes them — travelling further afterward does not retroactively update what the Map shows, per spec.
-* Map overlay is a plain text list (visited rooms + known connections), not a graphical map — no room-position data exists anywhere in the project, and a text list matches the existing minimalist style. Tunnel connections render in the tunnel's *actual* color via a `RichTextLabel` with BBCode (`[color=#hex]`), and the room you're currently standing in is bolded "— You are here."
-* Three-stage forced sequence in the Library room: tap Fragment → tap Map (to actually see what Fragment did) → tap the tunnel. Fragment alone has no observable effect without being forced to look at the Map right after.
+* Map Fragment snapshots *currently known* portal connections and freezes them — travelling further afterward does not retroactively update what the Map shows, per spec.
+* Map overlay is a plain text list (visited rooms + known connections), not a graphical map — no room-position data exists anywhere in the project, and a text list matches the existing minimalist style. Portal connections render in the portal's *actual* color via a `RichTextLabel` with BBCode (`[color=#hex]`), and the room you're currently standing in is bolded "— You are here."
+* Three-stage forced sequence in the Library room: tap Fragment → tap Map (to actually see what Fragment did) → tap the portal. Fragment alone has no observable effect without being forced to look at the Map right after.
 
 ### Level 4 — Warp Scroll
 
-* Start Room has two tunnels; only the wrong one is tappable at first. It leads to a true dead end — zero tunnels, zero doors, nothing to interact with except Warp Scroll.
+* Start Room has two portals; only the wrong one is tappable at first. It leads to a true dead end — zero portals, zero doors, nothing to interact with except Warp Scroll.
 * Warp opens a room picker (dynamically built list of visited rooms, excluding the current one) and teleports instantly on selection — no tween, since warping destroys the current room and instantiates an unrelated one; there's no shared space to animate across. Charge is spent only on picking a room, not on opening the picker.
 * This is the first room in the game revisited mid-attempt with a *different* forced target each time, which needed real architecture work (see below).
-* Discussed and deliberately rejected adding a "safety" tunnel back out of the dead end — it would defeat the lesson. Decided as a going-forward rule instead: this dead end is a one-time tutorial exception; every future room should always have at least one real tunnel out, so Warp Scroll stays a convenience ("recovering from inefficient exploration," per the GDD) rather than something required to avoid a stuck game state.
+* Discussed and deliberately rejected adding a "safety" portal back out of the dead end — it would defeat the lesson. Decided as a going-forward rule instead: this dead end is a one-time tutorial exception; every future room should always have at least one real portal out, so Warp Scroll stays a convenience ("recovering from inefficient exploration," per the GDD) rather than something required to avoid a stuck game state.
 
 ---
 
 ## Design Change: `requires_power_up` Moved From `Tappable` to `RoomData`
 
-Originally lived on the specific `Tunnel` node that also happened to be the tutorial's lock target (Levels 2-3). Level 4's dead-end room has **no tappables at all** — nothing to attach the field to — which exposed that the gate was never really about a tappable, it's about the room. Moved it to `RoomData.requires_power_up`, unconditional on whether a lock target even exists. Not a repeat of the old `RoomData.is_exit` mistake (removed in Day 3 for being redundant with scene content and drift-prone) — this field isn't derivable from the scene at all, it's an authorial decision, same category as `move_limit`.
+Originally lived on the specific `Portal` node that also happened to be the tutorial's lock target (Levels 2-3). Level 4's dead-end room has **no tappables at all** — nothing to attach the field to — which exposed that the gate was never really about a tappable, it's about the room. Moved it to `RoomData.requires_power_up`, unconditional on whether a lock target even exists. Not a repeat of the old `RoomData.is_exit` mistake (removed in Day 3 for being redundant with scene content and drift-prone) — this field isn't derivable from the scene at all, it's an authorial decision, same category as `move_limit`.
 
 ## Design Change: Revisit-Aware Tutorial Locking
 
-Every room built through Level 3 was visited at most once. Level 4's Start Room needed to be visited twice with a *different* forced tunnel each time. Added `Tappable.tutorial_highlight_on_revisit`, and `main.gd` now checks `GameState.get_visited_rooms().has(room_id)` **before** marking the room visited to decide which flag applies. This also forced moving the pulsing-highlight trigger out of `Tappable._ready()` (which only knew its own static flag) and into `main.gd` (which now explicitly calls `set_highlighted(true)` on whichever tappable it picks) — the only place that actually has the attempt history needed to decide.
+Every room built through Level 3 was visited at most once. Level 4's Start Room needed to be visited twice with a *different* forced portal each time. Added `Tappable.tutorial_highlight_on_revisit`, and `main.gd` now checks `GameState.get_visited_rooms().has(room_id)` **before** marking the room visited to decide which flag applies. This also forced moving the pulsing-highlight trigger out of `Tappable._ready()` (which only knew its own static flag) and into `main.gd` (which now explicitly calls `set_highlighted(true)` on whichever tappable it picks) — the only place that actually has the attempt history needed to decide.
 
 Ruled out storing "already visited/forced" directly on a `RoomData`/`LevelData` instance: `load()` caches resources by path, so the same instance persists across every replay of a level in one session — mutating it at runtime would leak state across attempts. `GameState`, reset every `start_level()`, is the correct home for anything attempt-scoped.
 
@@ -88,7 +88,7 @@ Original plan (Day 3-ish) was one theme per *room*. Reworked to one theme per *s
 
 ### Level 5 Design: "Going in Circles"
 
-First level past the tutorial band — see [LevelDesign.md](../LevelDesign.md). 5 rooms (Library theme), 3 tunnel colors, first level with an actual move limit (12, provisional) and no forced power-up gate — the player picks their own path for the first time. One branch off the Start Room never dead-ends, but both of its exits either loop back to the start or take the long way around, teaching "not every tunnel is progress" without punishing the wrong choice hard. Star thresholds (¾/8/12) are provisional pending playtest, matching the GDD's still-open scoring-threshold question.
+First level past the tutorial band — see [LevelDesign.md](../LevelDesign.md). 5 rooms (Library theme), 3 portal colors, first level with an actual move limit (12, provisional) and no forced power-up gate — the player picks their own path for the first time. One branch off the Start Room never dead-ends, but both of its exits either loop back to the start or take the long way around, teaching "not every portal is progress" without punishing the wrong choice hard. Star thresholds (¾/8/12) are provisional pending playtest, matching the GDD's still-open scoring-threshold question.
 
 ### Refactor: `RoomTheme` Resource + Role-Based Room Naming
 

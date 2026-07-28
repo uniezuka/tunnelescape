@@ -10,6 +10,8 @@ Each level (stage) is built around exactly one theme from the list below (see [G
 
 Every stage has exactly one Start Room and one Exit Room (see GDD.md's [Rooms](GDD.md#rooms) and [Exit Door](GDD.md#exit-door) rules). Each theme has a fixed Start Room name and a fixed Exit Room name — every stage that uses a given theme reuses that same pair, so "The Library Entrance" always means the start of a Library stage, wherever it appears. The rest of a stage's rooms are picked freely from that theme's "Other Rooms" list.
 
+The Exit Room name listed below is the plain flavor name — in-game it's always shown with an "(Exit)" suffix (e.g. "The Grand Reading Hall (Exit)"), so the player can recognize it immediately via Compass, Warp Scroll, or the Map overlay. The Start Room name is never suffixed; there's no ambiguity about where the player begins.
+
 A stage only needs a handful of rooms per level. The same theme can be reused across multiple stages later in the game, drawing on the "Other Rooms" names that stage didn't already use.
 
 ### 📚 Library

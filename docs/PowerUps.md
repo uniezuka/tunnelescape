@@ -13,7 +13,7 @@ Power-ups are not handed out per level — each of the three is a **stock the pl
 
 ## Compass
 
-Reveal the destination of one selected tunnel. Spends 1 charge.
+Reveal the destination of one selected portal. Spends 1 charge.
 
 First introduced: Level 2 (tutorial).
 
@@ -21,9 +21,9 @@ First introduced: Level 2 (tutorial).
 
 The map overlay itself (HUD button, semi-transparent, tap to dismiss) is always available and shows rooms the player has physically visited.
 
-Map Fragment spends 1 charge on use. On use, it snapshots which tunnel leads to which room, for rooms already visited at that moment — that connection data is then permanently added to the player's map knowledge for the rest of the attempt (it does not disappear when the overlay is closed, and it does not keep updating with rooms explored afterward).
+Map Fragment spends 1 charge on use. On use, it snapshots which portal leads to which room, for rooms already visited at that moment — that connection data is then permanently added to the player's map knowledge for the rest of the attempt (it does not disappear when the overlay is closed, and it does not keep updating with rooms explored afterward).
 
-Does not reveal unexplored rooms or their connections. Using it with no rooms visited yet wastes it (nothing to snapshot) — the game shows a confirmation prompt ("No tunnels discovered yet — use anyway?") before letting the player burn it in that state.
+Does not reveal unexplored rooms or their connections. Using it with no rooms visited yet wastes it (nothing to snapshot) — the game shows a confirmation prompt ("No portals discovered yet — use anyway?") before letting the player burn it in that state.
 
 First introduced: Level 3 (tutorial).
 
@@ -36,5 +36,6 @@ First introduced: Level 4 (tutorial).
 ## Balancing Notes
 
 * Level design must never require a power-up to solve a level — they exist to cut down on frustration and reward exploration, not to gate completion. The only exception is the scripted first-time tutorial use in Levels 2-4.
+* **Level 5 onward: no room is ever a true dead end.** Every room must have at least one real portal out. Level 4's Dead End room (zero portals, Warp Scroll required to escape) was a deliberate one-time tutorial exception and must not be repeated. This guarantees a player with 0 charges of everything can still always finish a level — they just may have to take the long way.
 * Because stock is shared across the whole game (not reset per level), a level should be solvable with 0 of any power-up in stock — a player who burned all their charges a few levels back and hasn't waited for a refill must still be able to finish.
 * When balancing move limits for a level, assume the player has 2-3 of each power-up available, not fewer — the refund-on-fail rule means stock rarely stays depleted for long once a player is engaged with a level.

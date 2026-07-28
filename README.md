@@ -1,24 +1,24 @@
-# Tunnel Escape
+# Portal Escape
 
-*A memory-based puzzle game about exploring mysterious teleportation tunnels.*
+*A memory-based puzzle game about exploring mysterious teleportation portals.*
 
 ---
 
 ## Overview
 
-Tunnel Escape is a 2D puzzle game for Android where players navigate a network of interconnected rooms linked by colored teleportation tunnels.
+Portal Escape is a 2D puzzle game for Android where players navigate a network of interconnected rooms linked by colored teleportation portals.
 
 The objective is simple:
 
 > **Find the exit before running out of moves.**
 
-As players progress, they must memorize tunnel destinations, optimize their routes, and use limited power-ups to solve increasingly challenging handcrafted levels.
+As players progress, they must memorize portal destinations, optimize their routes, and use limited power-ups to solve increasingly challenging handcrafted levels.
 
 ---
 
 ## Vision
 
-Tunnel Escape is designed around one core idea:
+Portal Escape is designed around one core idea:
 
 > **Simple rules create satisfying puzzles.**
 
@@ -35,7 +35,7 @@ Players should finish a level thinking:
 ## Core Features
 
 * 20 handcrafted puzzle levels
-* Colored teleportation tunnels
+* Colored teleportation portals
 * Move-based gameplay
 * Three collectible power-ups
 * Star rating system
@@ -47,14 +47,14 @@ Players should finish a level thinking:
 
 ## Gameplay
 
-Each level consists of multiple rooms connected by colored tunnels.
+Each level consists of multiple rooms connected by colored portals.
 
 Players begin with no knowledge of the map.
 
 To complete a level:
 
 1. Explore rooms.
-2. Discover where tunnels lead.
+2. Discover where portals lead.
 3. Remember the layout.
 4. Find the exit.
 5. Reach it before running out of moves.
@@ -65,13 +65,13 @@ To complete a level:
 
 ### 🧭 Compass
 
-Reveal where one selected tunnel leads.
+Reveal where one selected portal leads.
 
 ---
 
 ### 🗺️ Map Fragment
 
-Single-use. Snapshots which tunnel leads to which room, for rooms already visited at that moment, and permanently adds that to the player's map knowledge for the rest of the attempt. A separate, always-available map button shows rooms visited regardless of this power-up.
+Single-use. Snapshots which portal leads to which room, for rooms already visited at that moment, and permanently adds that to the player's map knowledge for the rest of the attempt. A separate, always-available map button shows rooms visited regardless of this power-up.
 
 ---
 
@@ -183,7 +183,7 @@ After Version 1.0:
 * Daily challenges
 * Endless mode
 * New room themes
-* New tunnel mechanics
+* New portal mechanics
 * Achievement system
 * iOS release
 
@@ -191,7 +191,7 @@ After Version 1.0:
 
 ## Design Philosophy
 
-Tunnel Escape is intended to be a game that anyone can understand within minutes but continue improving at through smarter routing and better memory.
+Portal Escape is intended to be a game that anyone can understand within minutes but continue improving at through smarter routing and better memory.
 
 Rather than overwhelming players with mechanics, every new level should introduce interesting decisions while remaining approachable.
 

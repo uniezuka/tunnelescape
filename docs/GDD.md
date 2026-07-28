@@ -1,4 +1,4 @@
-# Tunnel Escape
+# Portal Escape
 
 ## Game Design Document (GDD)
 
@@ -11,7 +11,7 @@
 
 ## Working Title
 
-**Tunnel Escape**
+**Portal Escape**
 
 *(Working title. Subject to change.)*
 
@@ -39,9 +39,9 @@ No pay-to-win mechanics.
 
 # 2. Vision
 
-Tunnel Escape is a puzzle game where players explore a network of interconnected rooms linked by colored teleportation tunnels.
+Portal Escape is a puzzle game where players explore a network of interconnected rooms linked by colored teleportation portals.
 
-Each level begins with the player in an unknown room. By exploring tunnels, remembering where they lead, and carefully managing limited moves, the player must locate the exit door before running out of moves.
+Each level begins with the player in an unknown room. By exploring portals, remembering where they lead, and carefully managing limited moves, the player must locate the exit door before running out of moves.
 
 The game should make players feel clever rather than lucky.
 
@@ -80,8 +80,8 @@ Players should feel challenged, not stressed.
 # 4. Core Gameplay Loop
 
 1. Start the level.
-2. Explore rooms using colored tunnels.
-3. Memorize tunnel destinations.
+2. Explore rooms using colored portals.
+3. Memorize portal destinations.
 4. Locate the exit room.
 5. Reach the exit before running out of moves.
 6. Earn a star rating.
@@ -97,18 +97,18 @@ Each level is made up of multiple handcrafted rooms.
 
 Every room contains:
 
-* Colored tunnels
+* Colored portals
 * Decorative theme
 * Optional power-up
 * Exit door (only one room contains the exit)
 
-Rooms are connected only through teleportation tunnels.
+Rooms are connected only through teleportation portals.
 
 ---
 
-## Colored Tunnels
+## Colored Portals
 
-Colored tunnels instantly teleport the player to another room.
+Colored portals instantly teleport the player to another room.
 
 Example colors:
 
@@ -117,9 +117,9 @@ Example colors:
 * 🟢 Green
 * 🟣 Purple
 
-A tunnel always leads to the same destination within a level.
+A portal always leads to the same destination within a level.
 
-Players gradually learn the tunnel network through exploration.
+Players gradually learn the portal network through exploration.
 
 ---
 
@@ -135,7 +135,7 @@ In Version 1.0 the door is never locked. Finding the correct room and tapping th
 
 ## Moves
 
-Only entering a tunnel (moving to a different room) consumes one move.
+Only entering a portal (moving to a different room) consumes one move.
 
 Looking around the current room, opening the map overlay, and other non-travel actions are free.
 
@@ -151,9 +151,9 @@ Running out of moves results in a level failure.
 
 Tutorial. Each level introduces exactly one new mechanic:
 
-* **Level 1** — Movement: travel room to room via tunnels and find the exit.
-* **Level 2** — Compass: reveal a tunnel's destination before entering it.
-* **Level 3** — Map Fragment: snapshot tunnel connections for rooms already visited.
+* **Level 1** — Movement: travel room to room via portals and find the exit.
+* **Level 2** — Compass: reveal a portal's destination before entering it.
+* **Level 3** — Map Fragment: snapshot portal connections for rooms already visited.
 * **Level 4** — Warp Scroll: instantly return to a previously visited room.
 
 Unlimited moves.
@@ -168,7 +168,7 @@ Introduce:
 
 * Move limit
 * More rooms
-* Three tunnel colors
+* Three portal colors
 
 ---
 
@@ -213,11 +213,11 @@ Power-ups are not a one-time grant per level. Each of the three power-ups is a *
 
 ## Compass
 
-Reveal the destination of one selected tunnel.
+Reveal the destination of one selected portal.
 
 Example:
 
-Player taps a tunnel.
+Player taps a portal.
 
 Compass displays:
 
@@ -231,7 +231,7 @@ Spends 1 charge (max stock 3, see [Power-Up Economy](#power-up-economy)).
 
 A map overlay (opened via a HUD button) is always available and shows the rooms the player has physically visited.
 
-Map Fragment spends 1 charge on use (max stock 3, see [Power-Up Economy](#power-up-economy)). On use, it snapshots which tunnel leads to which room for rooms already visited at that moment, and that connection data becomes a permanent part of the player's map knowledge for the rest of the attempt.
+Map Fragment spends 1 charge on use (max stock 3, see [Power-Up Economy](#power-up-economy)). On use, it snapshots which portal leads to which room for rooms already visited at that moment, and that connection data becomes a permanent part of the player's map knowledge for the rest of the attempt.
 
 Using it before exploring anything wastes it — a confirmation prompt warns the player first.
 
@@ -280,7 +280,7 @@ Version 1.0 contains:
 Levels gradually introduce:
 
 * More rooms
-* More tunnel colors
+* More portal colors
 * More complex layouts
 * Tighter move limits
 
@@ -324,7 +324,7 @@ Relaxing background music.
 Simple sound effects:
 
 * Walking
-* Entering tunnel
+* Entering portal
 * Discovering exit
 * Level complete
 * Error / no moves
@@ -405,7 +405,7 @@ Players are never forced to watch rewarded ads.
 Version 1.0 will include:
 
 * 20 handcrafted levels
-* Colored teleport tunnels
+* Colored teleport portals
 * Move system
 * Exit doors
 * Three power-ups
@@ -427,7 +427,7 @@ Potential future updates:
 * Daily Puzzle
 * Endless Mode
 * Procedurally Generated Levels
-* New Tunnel Types
+* New Portal Types
 * Additional Power-Ups
 * Achievements
 * Cosmetic Themes
@@ -441,15 +441,16 @@ Potential future updates:
 
 Resolved (see [TDD.md](TDD.md) for technical detail):
 
-* ~~How should moves be consumed?~~ → Only entering a tunnel costs a move.
-* ~~Should the player freely walk inside each room, or simply tap tunnels and the exit?~~ → Tap-to-move only; no free walking.
+* ~~How should moves be consumed?~~ → Only entering a portal costs a move.
+* ~~Should the player freely walk inside each room, or simply tap portals and the exit?~~ → Tap-to-move only; no free walking.
 * ~~How many rooms create the ideal difficulty?~~ → Decided per-level during level design/playtesting.
 * ~~How many power-ups should players start with, and how are additional ones earned?~~ → See [Power-Up Economy](#power-up-economy): max stock 3 per type, starts full, refills ~1 charge/10 min per type, refunded on a failed/abandoned attempt, instant refill via rewarded ads in a future update.
+* ~~Should rooms have fixed layouts or slight variations?~~ → Fixed, always identical on every visit and every replay. No randomization of any kind — matches "no procedural generation" (see [Level Progression](#9-level-progression)) and keeps the player's memory of a room trustworthy, which the whole game's challenge depends on.
+* ~~What are the exact thresholds for ⭐⭐⭐, ⭐⭐, and ⭐ scoring?~~ → Decided per-level during level design, same as room count — not a global formula. Authored alongside each level's move limit in [LevelDesign.md](LevelDesign.md) (see Level 5 for the first example).
 
 Still open, to be finalized during prototyping:
 
-* Should rooms have fixed layouts or slight variations?
-* What are the exact thresholds for ⭐⭐⭐, ⭐⭐, and ⭐ scoring?
+* None currently — new questions may surface once playtesting starts.
 
 ---
 
@@ -489,7 +490,7 @@ Still open, to be finalized during prototyping:
 
 # Design Philosophy
 
-Tunnel Escape is designed around a single principle:
+Portal Escape is designed around a single principle:
 
 **Simple rules create satisfying puzzles.**
 

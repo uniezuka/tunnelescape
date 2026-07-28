@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3]
 
-[ext_resource type="PackedScene" path="res://scenes/tunnel/Tunnel.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/portal/Portal.tscn" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/main/Player.tscn" id="2"]
 
 [node name="Room04Start" type="Node2D"]
@@ -35,21 +35,21 @@ mouse_filter = 2
 theme_override_font_sizes/font_size = 52
 horizontal_alignment = 1
 autowrap_mode = 2
-text = "Tap the glowing tunnel."
+text = "Tap the glowing portal."
 
 [node name="Player" parent="." instance=ExtResource("2")]
 position = Vector2(540, 1500)
 
-[node name="TunnelPurple" parent="." instance=ExtResource("1")]
+[node name="PortalPurple" parent="." instance=ExtResource("1")]
 position = Vector2(300, 800)
-tunnel_color = Color(0.55, 0.25, 0.75, 1)
-tunnel_label = "Purple"
+portal_color = Color(0.55, 0.25, 0.75, 1)
+portal_label = "Purple"
 destination_room_id = "wrong"
 tutorial_highlight = true
 
-[node name="TunnelOrange" parent="." instance=ExtResource("1")]
+[node name="PortalOrange" parent="." instance=ExtResource("1")]
 position = Vector2(780, 800)
-tunnel_color = Color(0.95, 0.6, 0.15, 1)
-tunnel_label = "Orange"
+portal_color = Color(0.95, 0.6, 0.15, 1)
+portal_label = "Orange"
 destination_room_id = "exit"
 tutorial_highlight_on_revisit = true

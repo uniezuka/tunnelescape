@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/main/Player.tscn" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/tunnel/ExitDoor.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/portal/ExitDoor.tscn" id="2"]
 
 [node name="Room02Exit" type="Node2D"]
 

@@ -12,7 +12,7 @@ script = ExtResource("2")
 room_id = "start"
 room_role = "start"
 scene = ExtResource("3")
-revisit_caption = "Tap the other tunnel to find the exit."
+revisit_caption = "Tap the other portal to find the exit."
 
 [sub_resource type="Resource" id="Resource_wrong"]
 script = ExtResource("2")

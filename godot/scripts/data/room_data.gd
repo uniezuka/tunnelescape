@@ -21,4 +21,6 @@ func get_display_name(level: LevelData) -> String:
 	if themed_name == "":
 		push_error("Theme '%s' has no %s_room_name set." % [level.theme.theme_id, room_role])
 		return "(missing room name)"
+	if room_role == "exit":
+		return "%s (Exit)" % themed_name
 	return themed_name
