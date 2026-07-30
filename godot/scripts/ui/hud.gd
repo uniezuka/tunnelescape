@@ -15,6 +15,7 @@ signal warp_cancel_pressed
 @onready var _level_label: Label = $Root/LevelLabel
 @onready var _moves_label: Label = $Root/MovesLabel
 @onready var _compass_button: Button = $Root/CompassButton
+@onready var _compass_timer_label: Label = $Root/CompassTimerLabel
 @onready var _stars_label: Label = $Root/StarsLabel
 @onready var _continue_button: Button = $Root/ContinueButton
 @onready var _reveal_popup: Control = $Root/RevealPopup
@@ -28,11 +29,13 @@ signal warp_cancel_pressed
 @onready var _map_label: RichTextLabel = $Root/MapOverlay/MapLabel
 
 @onready var _fragment_button: Button = $Root/FragmentButton
+@onready var _fragment_timer_label: Label = $Root/FragmentTimerLabel
 @onready var _fragment_confirm: Control = $Root/FragmentConfirmDialog
 @onready var _fragment_use_anyway_button: Button = $Root/FragmentConfirmDialog/UseAnywayButton
 @onready var _fragment_cancel_button: Button = $Root/FragmentConfirmDialog/CancelButton
 
 @onready var _warp_button: Button = $Root/WarpButton
+@onready var _warp_timer_label: Label = $Root/WarpTimerLabel
 @onready var _warp_picker: Control = $Root/WarpPicker
 @onready var _warp_room_list: VBoxContainer = $Root/WarpPicker/RoomList
 @onready var _warp_cancel_button: Button = $Root/WarpPicker/CancelButton
@@ -89,6 +92,41 @@ func set_utility_buttons_disabled(disabled: bool) -> void:
 	_fragment_button.disabled = disabled
 	_warp_button.disabled = disabled
 	_map_button.disabled = disabled
+
+func set_compass_charges(charges: int) -> void:
+	_compass_button.text = "Compass (%d)" % charges
+
+func set_fragment_charges(charges: int) -> void:
+	_fragment_button.text = "Fragment (%d)" % charges
+
+func set_warp_charges(charges: int) -> void:
+	_warp_button.text = "Warp (%d)" % charges
+
+func set_compass_enabled(enabled: bool) -> void:
+	_compass_button.disabled = not enabled
+
+func set_fragment_enabled(enabled: bool) -> void:
+	_fragment_button.disabled = not enabled
+
+func set_warp_enabled(enabled: bool) -> void:
+	_warp_button.disabled = not enabled
+
+func set_compass_timer(seconds_remaining: int) -> void:
+	_compass_timer_label.visible = seconds_remaining > 0
+	_compass_timer_label.text = _format_timer(seconds_remaining)
+
+func set_fragment_timer(seconds_remaining: int) -> void:
+	_fragment_timer_label.visible = seconds_remaining > 0
+	_fragment_timer_label.text = _format_timer(seconds_remaining)
+
+func set_warp_timer(seconds_remaining: int) -> void:
+	_warp_timer_label.visible = seconds_remaining > 0
+	_warp_timer_label.text = _format_timer(seconds_remaining)
+
+func _format_timer(seconds_remaining: int) -> String:
+	if seconds_remaining <= 0:
+		return ""
+	return "%d:%02d" % [seconds_remaining / 60, seconds_remaining % 60]
 
 func set_compass_visible(compass_visible: bool) -> void:
 	_compass_button.visible = compass_visible

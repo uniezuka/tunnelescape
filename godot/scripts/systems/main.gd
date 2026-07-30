@@ -17,7 +17,7 @@ var _pending_next_level_path: String = ""
 var _current_level_path: String = ""
 
 func _ready() -> void:
-	GameState.charges_changed.connect(_on_powerup_charges_changed)
+	GameState.charges_changed.connect(_on_power_up_charges_changed)
 	_hud.compass_pressed.connect(_on_compass_pressed)
 	_hud.continue_pressed.connect(_on_continue_pressed)
 	_hud.map_pressed.connect(_on_map_pressed)
@@ -29,6 +29,11 @@ func _ready() -> void:
 	_hud.warp_cancel_pressed.connect(_on_warp_cancel_pressed)
 	_hud.retry_pressed.connect(_on_retry_pressed)
 	LevelLoader.room_loaded.connect(_on_room_loaded)
+	var power_up_timer := Timer.new()
+	power_up_timer.wait_time = 1.0
+	power_up_timer.autostart = true
+	power_up_timer.timeout.connect(_on_power_up_timer_tick)
+	add_child(power_up_timer)
 	_start_level(starting_level_path)
 
 func _start_level(level_path: String) -> void:
@@ -91,14 +96,13 @@ func _on_room_loaded(room_node: Node2D, room_data: RoomData) -> void:
 		elif required == "warp_scroll":
 			_hud.set_warp_highlighted(true)
 
-	_hud.set_compass_visible(GameState.get_charges("compass") > 0)
-	_hud.set_fragment_visible(GameState.get_charges("map_fragment") > 0)
-	_hud.set_warp_visible(GameState.get_charges("warp_scroll") > 0)
+	_refresh_power_up_buttons()
 	_hud.set_map_visible(GameState.map_unlocked)
 
 	_hud.set_moves_label(GameState.moves_remaining, GameState.has_unlimited_moves())
 	if GameState.is_out_of_moves() and room_data.room_role != "exit":
 		_level_failed = true
+		GameState.end_attempt(false)
 		_hud.show_fail_overlay()
 
 func _get_room_tappables() -> Array:
@@ -108,16 +112,73 @@ func _get_room_tappables() -> Array:
 			tappables.append(node)
 	return tappables
 
-func _on_powerup_charges_changed(power_up_id: String, remaining: int) -> void:
-	var has_charges: bool = remaining > 0
+## During the tutorial band (unlimited moves), only the one power-up that level
+## itself introduces should be visible — a previously-learned one shouldn't bleed
+## into a later tutorial level's lesson. From Level 5 on, every unlocked power-up
+## stays visible even at 0 charges (see _is_power_up_enabled) — it's disabled, not
+## hidden, so the player can still see it exists and when it'll recharge.
+func _is_power_up_shown(power_up_id: String, charges: int) -> bool:
+	if not GameState.is_unlocked(power_up_id):
+		return false
+	if GameState.has_unlimited_moves():
+		return charges > 0 and LevelLoader.current_level.power_up_unlocks.has(power_up_id)
+	return true
+
+## During the tutorial band, a power-up button is only clickable while the tutorial
+## is actually telling the player to use it right now — otherwise it's locked, even
+## if it's visible (e.g. already-learned buttons the current room doesn't need).
+## From Level 5 on there's no tutorial script to follow, so it's enabled whenever
+## it actually has a charge to spend.
+func _is_power_up_enabled(power_up_id: String, charges: int) -> bool:
+	if not GameState.has_unlimited_moves():
+		return charges > 0
+	return _tutorial_awaiting_power_up == power_up_id
+
+## Ticks once a second so the recharge countdown stays live. Skips whenever something
+## else is holding the buttons in a deliberately locked state (level complete/failed,
+## or a popup with its own blanket button-disable) — otherwise this would silently
+## re-enable buttons those states mean to keep locked.
+func _on_power_up_timer_tick() -> void:
+	if _level_complete or _level_failed or _hud.is_reveal_visible() or _hud.is_map_overlay_visible():
+		return
+	_refresh_power_up_buttons()
+
+func _refresh_power_up_buttons() -> void:
+	var compass_charges: int = GameState.get_charges("compass")
+	_hud.set_compass_visible(_is_power_up_shown("compass", compass_charges))
+	_hud.set_compass_charges(compass_charges)
+	_hud.set_compass_enabled(_is_power_up_enabled("compass", compass_charges))
+	_hud.set_compass_timer(GameState.get_seconds_until_next_charge("compass"))
+
+	var fragment_charges: int = GameState.get_charges("map_fragment")
+	_hud.set_fragment_visible(_is_power_up_shown("map_fragment", fragment_charges))
+	_hud.set_fragment_charges(fragment_charges)
+	_hud.set_fragment_enabled(_is_power_up_enabled("map_fragment", fragment_charges))
+	_hud.set_fragment_timer(GameState.get_seconds_until_next_charge("map_fragment"))
+
+	var warp_charges: int = GameState.get_charges("warp_scroll")
+	_hud.set_warp_visible(_is_power_up_shown("warp_scroll", warp_charges))
+	_hud.set_warp_charges(warp_charges)
+	_hud.set_warp_enabled(_is_power_up_enabled("warp_scroll", warp_charges))
+	_hud.set_warp_timer(GameState.get_seconds_until_next_charge("warp_scroll"))
+
+func _on_power_up_charges_changed(power_up_id: String, remaining: int) -> void:
+	var shown: bool = _is_power_up_shown(power_up_id, remaining)
+	var enabled: bool = _is_power_up_enabled(power_up_id, remaining)
 	if power_up_id == "compass":
-		_hud.set_compass_visible(has_charges)
-		if not has_charges:
+		_hud.set_compass_visible(shown)
+		_hud.set_compass_charges(remaining)
+		_hud.set_compass_enabled(enabled)
+		if remaining <= 0:
 			_hud.set_compass_armed(false)
 	elif power_up_id == "map_fragment":
-		_hud.set_fragment_visible(has_charges)
+		_hud.set_fragment_visible(shown)
+		_hud.set_fragment_charges(remaining)
+		_hud.set_fragment_enabled(enabled)
 	elif power_up_id == "warp_scroll":
-		_hud.set_warp_visible(has_charges)
+		_hud.set_warp_visible(shown)
+		_hud.set_warp_charges(remaining)
+		_hud.set_warp_enabled(enabled)
 
 func _on_compass_pressed() -> void:
 	if GameState.get_charges("compass") <= 0:
@@ -134,6 +195,7 @@ func _on_compass_pressed() -> void:
 		_tutorial_awaiting_power_up = ""
 		_tutorial_forcing_compass_reveal = true
 		_hud.set_compass_highlighted(false)
+		_refresh_power_up_buttons()
 		var caption: Label = _current_room.get_node_or_null("Caption")
 		if caption:
 			caption.text = "Now tap the glowing portal to reveal where it leads."
@@ -147,15 +209,21 @@ func _on_fragment_pressed() -> void:
 	_use_map_fragment()
 
 func _use_map_fragment() -> void:
+	var captured_connections: bool = GameState.has_known_connections()
 	GameState.snapshot_known_connections()
 	GameState.consume("map_fragment")
 	_hud.set_fragment_highlighted(false)
 	GameState.unlock_map()
 	_hud.set_map_visible(true)
+	if captured_connections:
+		_hud.show_reveal("Map Fragment used. Your explored connections are saved to the map.")
+	else:
+		_hud.show_reveal("Map Fragment used. Nothing was saved — you haven't explored any connections yet.")
 	if _tutorial_awaiting_power_up == "map_fragment":
 		_tutorial_awaiting_power_up = ""
 		_hud.set_map_highlighted(true)
 		_tutorial_awaiting_map = true
+		_refresh_power_up_buttons()
 		var caption: Label = _current_room.get_node_or_null("Caption")
 		if caption:
 			caption.text = "Tap Map to see what you've discovered."
@@ -185,6 +253,7 @@ func _on_warp_room_selected(room_id: String) -> void:
 	if _tutorial_awaiting_power_up == "warp_scroll":
 		_tutorial_awaiting_power_up = ""
 		_hud.set_warp_highlighted(false)
+		_refresh_power_up_buttons()
 	LevelLoader.enter_room(room_id)
 
 func _on_warp_cancel_pressed() -> void:
@@ -228,10 +297,12 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if _hud.is_reveal_visible():
 		_hud.hide_reveal()
+		_refresh_power_up_buttons()
 		return
 
 	if _hud.is_map_overlay_visible():
 		_hud.hide_map_overlay()
+		_refresh_power_up_buttons()
 		if _tutorial_awaiting_map:
 			_tutorial_awaiting_map = false
 			_hud.set_map_highlighted(false)
@@ -294,6 +365,7 @@ func _on_door_opened(door: Node2D) -> void:
 	if _player:
 		_player.move_to(door.global_position)
 	_level_complete = true
+	GameState.end_attempt(true)
 	var caption: Label = _current_room.get_node_or_null("Caption")
 	if caption:
 		caption.text = "Level Complete!"

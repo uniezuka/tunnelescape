@@ -1,0 +1,53 @@
+[gd_resource type="Resource" script_class="LevelData" load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/level_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_06_start.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_06_librarian_office.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_06_astronomer_study.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_06_card_catalog.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_06_exit.tscn" id="7"]
+[ext_resource type="Resource" path="res://resources/themes/library.tres" id="8"]
+
+[sub_resource type="Resource" id="Resource_start"]
+script = ExtResource("2")
+room_id = "start"
+room_role = "start"
+scene = ExtResource("3")
+
+[sub_resource type="Resource" id="Resource_librarian_office"]
+script = ExtResource("2")
+room_id = "librarian_office"
+room_name = "The Librarian's Office"
+scene = ExtResource("4")
+
+[sub_resource type="Resource" id="Resource_astronomer_study"]
+script = ExtResource("2")
+room_id = "astronomer_study"
+room_name = "The Astronomer's Study"
+scene = ExtResource("5")
+
+[sub_resource type="Resource" id="Resource_card_catalog"]
+script = ExtResource("2")
+room_id = "card_catalog"
+room_name = "The Card Catalog Hall"
+scene = ExtResource("6")
+
+[sub_resource type="Resource" id="Resource_exit"]
+script = ExtResource("2")
+room_id = "exit"
+room_role = "exit"
+scene = ExtResource("7")
+
+[resource]
+script = ExtResource("1")
+level_id = "level_06"
+level_number = 6
+next_level_path = "res://resources/levels/level_07.tres"
+move_limit = 12
+star_3_threshold = 4
+star_2_threshold = 8
+starting_room_id = "start"
+power_up_unlocks = Array[String](["compass", "map_fragment", "warp_scroll"])
+theme = ExtResource("8")
+rooms = Array[Resource]([SubResource("Resource_start"), SubResource("Resource_librarian_office"), SubResource("Resource_astronomer_study"), SubResource("Resource_card_catalog"), SubResource("Resource_exit")])

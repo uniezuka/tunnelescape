@@ -83,6 +83,51 @@ offset_bottom = -120.0
 theme_override_font_sizes/font_size = 32
 text = "Warp"
 
+[node name="FragmentTimerLabel" type="Label" parent="Root"]
+visible = false
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -115.0
+offset_right = 240.0
+offset_bottom = -75.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+text = ""
+
+[node name="CompassTimerLabel" type="Label" parent="Root"]
+visible = false
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -240.0
+offset_top = -115.0
+offset_right = -10.0
+offset_bottom = -75.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+text = ""
+
+[node name="WarpTimerLabel" type="Label" parent="Root"]
+visible = false
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 260.0
+offset_top = -115.0
+offset_right = 490.0
+offset_bottom = -75.0
+mouse_filter = 2
+theme_override_font_sizes/font_size = 28
+horizontal_alignment = 1
+text = ""
+
 [node name="StarsLabel" type="Label" parent="Root"]
 visible = false
 anchor_left = 0.5

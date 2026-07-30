@@ -8,7 +8,10 @@ class_name LevelData
 @export var star_3_threshold: int = -1
 @export var star_2_threshold: int = -1
 @export var starting_room_id: String = ""
-@export var starting_power_ups: Dictionary = {}
+## Power-up types this level unlocks (visible/usable) from here on — matches the
+## scripted tutorial introductions in Levels 2-4. Not a charge grant; real stock is
+## a persistent economy owned by GameState (see PowerUps.md#economy).
+@export var power_up_unlocks: Array[String] = []
 @export var starts_with_map_unlocked: bool = true
 @export var theme: RoomTheme
 @export var rooms: Array[RoomData] = []

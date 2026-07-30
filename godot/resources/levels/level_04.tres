@@ -34,6 +34,6 @@ level_number = 4
 next_level_path = "res://resources/levels/level_05.tres"
 move_limit = -1
 starting_room_id = "start"
-starting_power_ups = {"warp_scroll": 1}
+power_up_unlocks = Array[String](["warp_scroll"])
 theme = ExtResource("6")
 rooms = Array[Resource]([SubResource("Resource_start"), SubResource("Resource_wrong"), SubResource("Resource_exit")])

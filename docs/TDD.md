@@ -49,11 +49,11 @@ The **Map Fragment** power-up spends 1 charge on use: it snapshots the portal co
 
 ### Power-Up Economy System
 
-**Decision:** Power-up stock is global and persists across levels — it is not reset by `start_level()`. Each of the three power-up types has its own stock (0-3) and its own last-refill timestamp, both saved to disk.
+**Implemented (Day 7, see [DevLog 007](DevLog/007-Power-Up-Economy.md)):** Power-up stock is global and persists across levels — it is not reset by `start_level()`. Each of the three power-up types has its own stock (0-3) and its own last-refill timestamp. Currently in-memory only for the running session; saving both to disk across app restarts is still future work (see Save System, above).
 
-* **Refill:** on load, and whenever charges are read/spent, compute elapsed real time since the last-refill timestamp and add `elapsed / 10min` whole charges (capped at 3), advancing the timestamp by the amount consumed. This makes refilling correct even while the app is closed, without needing a running timer.
-* **Attempt-scoped spend:** the current level attempt tracks its own deltas (which power-ups were spent this attempt, and how many). On level completion, deltas are discarded (the spend is permanent). On failure (out of moves) or on quitting/restarting the level, deltas are added back to the persistent stock.
-* This replaces the current `GameState._charges` model (reset from `LevelData.starting_power_ups` in `start_level()`), which was built for the single-use-per-level tutorial design. `LevelData.starting_power_ups` remains useful only for the tutorial levels' forced first-time grant if a new player has 0 stock of that type; everywhere else, stock comes from the persistent economy.
+* **Refill:** whenever charges are read (`GameState.get_charges()`) or spent, compute elapsed real time since the last-refill timestamp and add `elapsed / 10min` whole charges (capped at 3), advancing the timestamp by the amount consumed. Once saved to disk, this makes refilling correct even while the app is closed, without needing a running timer.
+* **Attempt-scoped spend:** the current level attempt tracks its own deltas (which power-ups were spent this attempt, and how many, in `GameState._spent_this_attempt`). On level completion (`GameState.end_attempt(true)`), deltas are discarded (the spend is permanent). On failure or retry (`end_attempt(false)`), deltas are added back to the persistent stock.
+* `LevelData.power_up_unlocks` (an `Array[String]`) marks which power-up types are unlocked — i.e., visible/usable — from that level onward. It's not a charge grant; it only controls visibility/timing, matching the scripted tutorial introductions in Levels 2-4. Tutorial levels (unlimited moves) also don't spend from the real stock at all — see PowerUps.md#economy.
 * Rewarded-ad instant refill (future) is just "set stock to 3 and reset the refill timestamp to now" — no separate code path needed.
 
 ### Room Sizing

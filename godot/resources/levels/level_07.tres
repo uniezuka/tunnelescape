@@ -1,0 +1,52 @@
+[gd_resource type="Resource" script_class="LevelData" load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/level_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_07_start.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_07_reading_room.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_07_crystal_repository.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_07_reading_nook.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_07_exit.tscn" id="7"]
+[ext_resource type="Resource" path="res://resources/themes/library.tres" id="8"]
+
+[sub_resource type="Resource" id="Resource_start"]
+script = ExtResource("2")
+room_id = "start"
+room_role = "start"
+scene = ExtResource("3")
+
+[sub_resource type="Resource" id="Resource_reading_room"]
+script = ExtResource("2")
+room_id = "reading_room"
+room_name = "The Children's Reading Room"
+scene = ExtResource("4")
+
+[sub_resource type="Resource" id="Resource_crystal_repository"]
+script = ExtResource("2")
+room_id = "crystal_repository"
+room_name = "The Crystal Repository"
+scene = ExtResource("5")
+
+[sub_resource type="Resource" id="Resource_reading_nook"]
+script = ExtResource("2")
+room_id = "reading_nook"
+room_name = "The Reading Nook"
+scene = ExtResource("6")
+
+[sub_resource type="Resource" id="Resource_exit"]
+script = ExtResource("2")
+room_id = "exit"
+room_role = "exit"
+scene = ExtResource("7")
+
+[resource]
+script = ExtResource("1")
+level_id = "level_07"
+level_number = 7
+move_limit = 12
+star_3_threshold = 4
+star_2_threshold = 8
+starting_room_id = "start"
+power_up_unlocks = Array[String](["compass", "map_fragment", "warp_scroll"])
+theme = ExtResource("8")
+rooms = Array[Resource]([SubResource("Resource_start"), SubResource("Resource_reading_room"), SubResource("Resource_crystal_repository"), SubResource("Resource_reading_nook"), SubResource("Resource_exit")])

@@ -206,7 +206,7 @@ Power-ups are not a one-time grant per level. Each of the three power-ups is a *
 * **Charges refill over real time**, about 1 charge every 10 minutes per power-up type (full restock from empty takes about 30 minutes). This keeps stock feeling generous for a game built around short, repeated 1-3 minute sessions.
 * **Refund on fail:** a charge only leaves the player's stock for good when the level is *completed*. If the player runs out of moves or quits/restarts mid-attempt, any charges spent during that attempt are refunded back to stock. This keeps the game low-stress — a bad attempt never leaves the player worse off for the retry.
 * **Rewarded ads (future):** an ad can instantly refill a power-up's stock to full. Not in Version 1.0 — see [Advertisement Strategy](#14-advertisement-strategy).
-* New players start with full stock (3 of each). Tutorial levels (2-4) each force the use of one power-up, which is a real completion and therefore permanently spends 1 charge of that type — by Level 5 a player who has not paused will typically have 2 of each in stock.
+* New players start with full stock (3 of each). Tutorial levels (2-4) each force the use of one power-up to demonstrate it, but this doesn't spend from the real stock — real spending starts at Level 5, the first non-tutorial level, so every player reaches it with the full 3 of each.
 * Level design must never *require* a power-up to solve a level — they exist to reduce friction and reward exploration, not to gate completion. The one exception is the scripted first-time tutorial usage in Levels 2-4.
 
 ---
