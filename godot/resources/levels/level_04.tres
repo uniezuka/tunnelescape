@@ -31,6 +31,7 @@ scene = ExtResource("5")
 script = ExtResource("1")
 level_id = "level_04"
 level_number = 4
+next_level_path = "res://resources/levels/level_05.tres"
 move_limit = -1
 starting_room_id = "start"
 starting_power_ups = {"warp_scroll": 1}

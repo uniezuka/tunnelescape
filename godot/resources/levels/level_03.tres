@@ -34,5 +34,6 @@ next_level_path = "res://resources/levels/level_04.tres"
 move_limit = -1
 starting_room_id = "start"
 starting_power_ups = {"map_fragment": 1}
+starts_with_map_unlocked = false
 theme = ExtResource("6")
 rooms = Array[Resource]([SubResource("Resource_start"), SubResource("Resource_middle"), SubResource("Resource_exit")])

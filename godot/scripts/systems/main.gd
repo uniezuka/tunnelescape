@@ -12,7 +12,9 @@ var _tutorial_awaiting_power_up: String = ""
 var _tutorial_awaiting_map: bool = false
 var _tutorial_forcing_compass_reveal: bool = false
 var _level_complete: bool = false
+var _level_failed: bool = false
 var _pending_next_level_path: String = ""
+var _current_level_path: String = ""
 
 func _ready() -> void:
 	GameState.charges_changed.connect(_on_powerup_charges_changed)
@@ -25,10 +27,14 @@ func _ready() -> void:
 	_hud.warp_pressed.connect(_on_warp_pressed)
 	_hud.warp_room_selected.connect(_on_warp_room_selected)
 	_hud.warp_cancel_pressed.connect(_on_warp_cancel_pressed)
+	_hud.retry_pressed.connect(_on_retry_pressed)
 	LevelLoader.room_loaded.connect(_on_room_loaded)
 	_start_level(starting_level_path)
 
 func _start_level(level_path: String) -> void:
+	_current_level_path = level_path
+	_level_failed = false
+	_hud.hide_fail_overlay()
 	var level: LevelData = load(level_path)
 	_hud.set_level_label(level.level_number)
 	GameState.start_level(level)
@@ -39,6 +45,8 @@ func _on_room_loaded(room_node: Node2D, room_data: RoomData) -> void:
 	_level_complete = false
 	_pending_next_level_path = ""
 	_hud.set_continue_visible(false)
+	_hud.hide_stars()
+	_hud.set_utility_buttons_disabled(false)
 	_tutorial_lock_target = null
 	_player = room_node.get_node("Player")
 
@@ -83,10 +91,15 @@ func _on_room_loaded(room_node: Node2D, room_data: RoomData) -> void:
 		elif required == "warp_scroll":
 			_hud.set_warp_highlighted(true)
 
-	_hud.set_compass_visible(_tutorial_awaiting_power_up == "compass")
-	_hud.set_fragment_visible(_tutorial_awaiting_power_up == "map_fragment")
-	_hud.set_warp_visible(_tutorial_awaiting_power_up == "warp_scroll")
+	_hud.set_compass_visible(GameState.get_charges("compass") > 0)
+	_hud.set_fragment_visible(GameState.get_charges("map_fragment") > 0)
+	_hud.set_warp_visible(GameState.get_charges("warp_scroll") > 0)
 	_hud.set_map_visible(GameState.map_unlocked)
+
+	_hud.set_moves_label(GameState.moves_remaining, GameState.has_unlimited_moves())
+	if GameState.is_out_of_moves() and room_data.room_role != "exit":
+		_level_failed = true
+		_hud.show_fail_overlay()
 
 func _get_room_tappables() -> Array:
 	var tappables: Array = []
@@ -96,15 +109,15 @@ func _get_room_tappables() -> Array:
 	return tappables
 
 func _on_powerup_charges_changed(power_up_id: String, remaining: int) -> void:
-	if remaining > 0:
-		return
+	var has_charges: bool = remaining > 0
 	if power_up_id == "compass":
-		_hud.set_compass_visible(false)
-		_hud.set_compass_armed(false)
+		_hud.set_compass_visible(has_charges)
+		if not has_charges:
+			_hud.set_compass_armed(false)
 	elif power_up_id == "map_fragment":
-		_hud.set_fragment_visible(false)
+		_hud.set_fragment_visible(has_charges)
 	elif power_up_id == "warp_scroll":
-		_hud.set_warp_visible(false)
+		_hud.set_warp_visible(has_charges)
 
 func _on_compass_pressed() -> void:
 	if GameState.get_charges("compass") <= 0:
@@ -137,10 +150,10 @@ func _use_map_fragment() -> void:
 	GameState.snapshot_known_connections()
 	GameState.consume("map_fragment")
 	_hud.set_fragment_highlighted(false)
+	GameState.unlock_map()
+	_hud.set_map_visible(true)
 	if _tutorial_awaiting_power_up == "map_fragment":
 		_tutorial_awaiting_power_up = ""
-		GameState.unlock_map()
-		_hud.set_map_visible(true)
 		_hud.set_map_highlighted(true)
 		_tutorial_awaiting_map = true
 		var caption: Label = _current_room.get_node_or_null("Caption")
@@ -227,7 +240,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				caption.text = "Tap the portal to continue."
 		return
 
-	if _level_complete:
+	if _level_complete or _level_failed:
 		return
 
 	if _tutorial_awaiting_power_up != "" or _tutorial_awaiting_map:
@@ -270,6 +283,8 @@ func _reveal_portal_destination(portal: Portal) -> void:
 func _on_portal_entered(destination_room_id: String, portal: Node2D) -> void:
 	var from_room_id: String = LevelLoader.current_room_data.room_id
 	GameState.record_known_connection(from_room_id, destination_room_id, portal.portal_label, portal.portal_color)
+	GameState.consume_move()
+	_hud.set_moves_label(GameState.moves_remaining, GameState.has_unlimited_moves())
 	if _player:
 		_player.move_to(portal.global_position)
 	await get_tree().create_timer(0.2).timeout
@@ -283,6 +298,11 @@ func _on_door_opened(door: Node2D) -> void:
 	if caption:
 		caption.text = "Level Complete!"
 
+	var moves_used: int = GameState.get_moves_used()
+	var stars: int = LevelLoader.current_level.get_star_rating(moves_used)
+	_hud.show_stars(stars, moves_used, GameState.has_unlimited_moves())
+	_hud.set_utility_buttons_disabled(true)
+
 	_pending_next_level_path = LevelLoader.current_level.next_level_path
 	_hud.set_continue_visible(_pending_next_level_path != "")
 
@@ -293,3 +313,6 @@ func _on_continue_pressed() -> void:
 	_pending_next_level_path = ""
 	_hud.set_continue_visible(false)
 	_start_level(next_level_path)
+
+func _on_retry_pressed() -> void:
+	_start_level(_current_level_path)

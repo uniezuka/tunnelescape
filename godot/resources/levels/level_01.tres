@@ -25,5 +25,6 @@ level_number = 1
 next_level_path = "res://resources/levels/level_02.tres"
 move_limit = -1
 starting_room_id = "start"
+starts_with_map_unlocked = false
 theme = ExtResource("5")
 rooms = Array[Resource]([SubResource("Resource_start"), SubResource("Resource_exit")])

@@ -1,0 +1,52 @@
+[gd_resource type="Resource" script_class="LevelData" load_steps=13 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/level_data.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/data/room_data.gd" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_05_start.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_05_potion_workshop.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_05_scriptorium.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_05_vault.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room_05_exit.tscn" id="7"]
+[ext_resource type="Resource" path="res://resources/themes/library.tres" id="8"]
+
+[sub_resource type="Resource" id="Resource_start"]
+script = ExtResource("2")
+room_id = "start"
+room_role = "start"
+scene = ExtResource("3")
+
+[sub_resource type="Resource" id="Resource_potion_workshop"]
+script = ExtResource("2")
+room_id = "potion_workshop"
+room_name = "The Potion Workshop"
+scene = ExtResource("4")
+
+[sub_resource type="Resource" id="Resource_scriptorium"]
+script = ExtResource("2")
+room_id = "scriptorium"
+room_name = "The Scriptorium"
+scene = ExtResource("5")
+
+[sub_resource type="Resource" id="Resource_vault"]
+script = ExtResource("2")
+room_id = "vault"
+room_name = "The Ancient Records Vault"
+scene = ExtResource("6")
+
+[sub_resource type="Resource" id="Resource_exit"]
+script = ExtResource("2")
+room_id = "exit"
+room_role = "exit"
+scene = ExtResource("7")
+
+[resource]
+script = ExtResource("1")
+level_id = "level_05"
+level_number = 5
+move_limit = 12
+star_3_threshold = 4
+star_2_threshold = 8
+starting_room_id = "start"
+starting_power_ups = {"compass": 3, "map_fragment": 3, "warp_scroll": 3}
+theme = ExtResource("8")
+rooms = Array[Resource]([SubResource("Resource_start"), SubResource("Resource_potion_workshop"), SubResource("Resource_scriptorium"), SubResource("Resource_vault"), SubResource("Resource_exit")])
